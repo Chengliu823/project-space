@@ -2,7 +2,6 @@ package org.matsim.project.networkGeneration;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.lang3.mutable.MutableInt;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.TransportMode;
@@ -30,7 +29,6 @@ import org.matsim.core.utils.geometry.transformations.GeotoolsTransformation;
 import picocli.CommandLine;
 
 import java.io.FileWriter;
-import java.security.Key;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
@@ -85,10 +83,6 @@ public class NetworkValidation implements MATSimAppCommand {
     public double scoreDistance =0;
     //平均数
 
-    public double advScore =0.0;
-
-    //double adv_networkTravelTimeSum =0.0;
-
     //定义arraylist
     public List<Double> networkTravelTimeList = new ArrayList<>();
     public List<Double> validatedTravelTimeList = new ArrayList<>();
@@ -98,9 +92,6 @@ public class NetworkValidation implements MATSimAppCommand {
     public List<Double> distanceDifferenceList = new ArrayList<>();
     public List<Double> scoreTravelTimeList = new ArrayList<>();
     public List<Double> scoreDistanceList = new ArrayList<>();
-
-    public List<Double> allValidatedTravelTimeList = new ArrayList<>();
-    public List<Double> allValidatedDistanceList = new ArrayList<>();
 
     public List<Id<Link>> idCollectionList = new ArrayList<>();
 
@@ -139,21 +130,10 @@ public class NetworkValidation implements MATSimAppCommand {
 
     public List<Double> freeSpeedCollectionList = new ArrayList<>();
 
-    public List<Id<Link>> IdCollectionList =new ArrayList<>();
 
     //替换link的算法部分
-    public double improvedTravelTimeDifference =0.0;
-    public double improvedDistanceDifference =0.0;
-    public double improvedScoreTravelTime =0.0;
-    public double improvedScoreDistance =0.0;
-    public double improvedNetworkTravelTime = 0.0;
-    public double improvedValidatedTravelTime = 0.0;
-    public double improvedNetworkDistance =0.0;
-    public double improvedValidatedDistance =0.0;
-    public double improvedNetworkDistanceDeviation=0.0;
     public double improvedFinalScore = 0.0;
     public double improvedFreeSpeed =0.0;
-    public double improvedNetworkTravelTimeDeviation =0.0;
     public double bestImprovedFreeSpeed = 0.0;
     public double linkFreeSpeed;
 
@@ -161,20 +141,8 @@ public class NetworkValidation implements MATSimAppCommand {
     public int improvedZeroCounter=0;
     public int improvedCounter=0;
 
-
-    public List<Double> improvedNetworkTravelTimeList = new ArrayList<>();
-    public List<Double> improvedNetworkDistanceList = new ArrayList<>();
-    public List<Double> improvedValidatedTravelTimeList = new ArrayList<>();
-    public List<Double> improvedValidatedDistanceList = new ArrayList<>();
-    public List<Double> improvedTravelTimeDifferenceList = new ArrayList<>();
-    public List<Double> improvedDistanceDifferenceList = new ArrayList<>();
-    public List<Double> improvedScoreTravelTimeList = new ArrayList<>();
-    public List<Double> improvedScoreDistanceList = new ArrayList<>();
     public List<Double> improvedFreeSpeedList = new ArrayList<>();
     public List<Double> improvedFinalScoreList = new ArrayList<>();
-
-
-
     public Map<Double,Double> scoreRecordMap = new HashMap<>();
 
     @Override
@@ -349,25 +317,6 @@ public class NetworkValidation implements MATSimAppCommand {
                             improvedZeroCounter++;
                         }
 
-                        ScoreCalculation();
-
-                        System.out.println("originalNetworkTravelTimeDeviation: "+networkTravelTimeDeviation  +"\n originalNetworkDistanceDeviation: "+networkDistanceDeviation+ "\noriginalFinalScore"+finalScore);
-
-                        //scoreRecordMap.put(improvedFreeSpeed,improvedFinalScore);
-
-                        //这里开始挑选数据
-                        if (originalNetworkDistanceDeviation ==networkDistanceDeviation ){
-                            if (finalScore <= originalFinalScore && networkTravelTimeDeviation > originalNetworkTravelTimeDeviation * 0.8 && networkTravelTimeDeviation <originalNetworkTravelTimeDeviation * 1.2){
-                                scoreRecordMap.put(improvedFreeSpeed,improvedFinalScore); //此处排序可以用别的方法实现，标记
-                            }
-
-
-
-                        }
-
-                        clearElement(networkTravelTimeList, validatedTravelTimeList, networkDistanceList, validatedDistanceList, travelTimeDifferenceList, distanceDifferenceList,scoreTravelTimeList,scoreDistanceList);
-
-
                         personTripCounter++;
                     }
                     improvedValidatedTimes++;
@@ -377,21 +326,23 @@ public class NetworkValidation implements MATSimAppCommand {
                     }
 
                 }
-/*
-ScoreCalculation();
+
+                ScoreCalculation();
 
                 System.out.println("originalNetworkTravelTimeDeviation: "+networkTravelTimeDeviation  +"\n originalNetworkDistanceDeviation: "+networkDistanceDeviation+ "\noriginalFinalScore"+finalScore);
 
+                //scoreRecordMap.put(improvedFreeSpeed,improvedFinalScore);
 
                 //这里开始挑选数据
-                    if (originalNetworkDistanceDeviation == networkDistanceDeviation){
-                        if (finalScore <= originalFinalScore && networkTravelTimeDeviation > originalNetworkTravelTimeDeviation * 0.8 && networkTravelTimeDeviation <originalNetworkTravelTimeDeviation * 1.2){
-                            scoreRecordMap.put(improvedFreeSpeed,improvedFinalScore); //此处排序可以用别的方法实现，标记
-                        }
-
+                double minOriginalNetworkDistanceDeviation =originalNetworkDistanceDeviation*0.999;
+                double maxOriginalNetworkDistanceDeviation =originalNetworkDistanceDeviation*1.001;
+                if (networkDistanceDeviation > minOriginalNetworkDistanceDeviation && networkDistanceDeviation < maxOriginalNetworkDistanceDeviation){
+                    if (finalScore <= originalFinalScore && networkTravelTimeDeviation > originalNetworkTravelTimeDeviation * 0.8 && networkTravelTimeDeviation <originalNetworkTravelTimeDeviation * 1.2){
+                        scoreRecordMap.put(improvedFreeSpeed,improvedFinalScore); //此处排序可以用别的方法实现，标记
                     }
- */
+                }
 
+                clearElement(networkTravelTimeList, validatedTravelTimeList, networkDistanceList, validatedDistanceList, travelTimeDifferenceList, distanceDifferenceList,scoreTravelTimeList,scoreDistanceList);
                 }
 
                 System.out.println("Score Record Map:"+scoreRecordMap);
