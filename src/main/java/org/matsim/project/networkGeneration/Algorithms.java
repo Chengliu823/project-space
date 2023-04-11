@@ -1,4 +1,4 @@
-
+/*
 
 package org.matsim.project.networkGeneration;
 
@@ -39,7 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class NetworkValidation implements MATSimAppCommand {
+public class Algorithms implements MATSimAppCommand {
     @CommandLine.Option(names = "--api", description = "path to network file", defaultValue = "GOOGLE_MAP")
     private API api;
 
@@ -73,7 +73,7 @@ public class NetworkValidation implements MATSimAppCommand {
 
     @Override
     public Integer call() throws Exception {
-
+        LinkInfo linkInfo = new LinkInfo();
         List<LinkInfo> linkInfoList = new ArrayList<>();
         List<AlgorithmsLink> algorithmsLinkList = new ArrayList<>();
         List<AlgorithmsLink> improveLinkList = new ArrayList<>();
@@ -147,7 +147,10 @@ public class NetworkValidation implements MATSimAppCommand {
                 tripInfoList.add(tripInfo);
 
                 if (route.travelTime != 0 && validatedResult.getFirst() != 0 && networkTravelDistance != 0 && validatedResult.getSecond() != 0){
-                    LinkInfo linkInfo = new LinkInfo(route.travelTime,networkTravelDistance,validatedResult.getFirst(), validatedResult.getSecond());
+                    linkInfo.setNetworkTravelTime(route.travelTime);
+                    linkInfo.setValidationTravelTime(validatedResult.getFirst());
+                    linkInfo.setNetworkDistance(networkTravelDistance);
+                    linkInfo.setValidationDistance(validatedResult.getSecond());
                     linkInfoList.add(linkInfo);
 
                     for (Link link: route.links){
@@ -157,9 +160,6 @@ public class NetworkValidation implements MATSimAppCommand {
                     }
                 }else {
                     validationZeroCount++;
-                }
-                for (int i1 = 0; i1 < linkInfoList.size(); i1++) {
-                    System.out.println("Network travel time"+linkInfoList.get(i1).getNetworkTravelTime()+"validation travel Time"+linkInfoList.get(i1).getValidationTravelTime()+"network distance"+linkInfoList.get(i1).getNetworkDistance()+"validation distance"+linkInfoList.get(i1).getValidationDistance());
                 }
 
                 validated++;
@@ -223,7 +223,6 @@ public class NetworkValidation implements MATSimAppCommand {
 
                         double improveValidationTravelTime = tripInfoList.get(validatedCount).getValidationTravelTime();
                         double improveValidationDistance = tripInfoList.get(validatedCount).getValidationDistance();
-
                         if (route.travelTime != 0 && improveValidationTravelTime != 0 && networkTravelDistance != 0 && improveValidationDistance != 0){
                             LinkInfo improveLinkInfo = new LinkInfo(route.travelTime,networkTravelDistance,improveValidationTravelTime,improveValidationDistance);
                             linkInfoList.add(improveLinkInfo);
@@ -239,7 +238,6 @@ public class NetworkValidation implements MATSimAppCommand {
                         break;
                     }
                 }
-                
 
                 double secondScore = AlgorithmsUtils.scoreCalculation(linkInfoList);
                 double secondTravelTimeDeviation = AlgorithmsUtils.travelTimeDeviation(linkInfoList);
@@ -249,7 +247,9 @@ public class NetworkValidation implements MATSimAppCommand {
                 if (firstDistanceDeviation == secondDistanceDeviation && secondScore<=firstScore){
                     if (secondTravelTimeDeviation>firstTravelTimeDeviation*0.8 && secondTravelTimeDeviation< firstTravelTimeDeviation*1.2){
                         ImproveScore improveScore = new ImproveScore(improvedFreeSpeed,secondScore);
+                        System.out.println("improvedFreeSpeed:"+improvedFreeSpeed+"secondScore: "+secondScore);
                         improveScoreList.add(improveScore);
+
                     }
                 }
             }
@@ -263,3 +263,5 @@ public class NetworkValidation implements MATSimAppCommand {
     }
 
 }
+
+ */
