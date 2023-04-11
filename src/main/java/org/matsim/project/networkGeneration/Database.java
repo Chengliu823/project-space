@@ -3,6 +3,7 @@ package org.matsim.project.networkGeneration;
 import com.beust.jcommander.IValueValidator;
 import org.jaitools.numeric.Statistic;
 import org.junit.jupiter.api.Test;
+import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Link;
 
 import java.sql.*;
@@ -43,6 +44,52 @@ public class Database {
         }
         return connection;
     }
+
+    public void createAPITable(){
+        String url = "jdbc:sqlite:E:\\TU_Berlin\\Masterarbeit\\project-space\\lib\\TripInfo.db";
+
+        // SQL statement for creating a new table
+        String sqlCreate = "CREATE TABLE IF NOT EXISTS APITable (\n"
+                + "	TripId String,\n"
+                + "	Form_X real,\n"
+                + "	Form_Y real,\n"
+                + "	To_X real,\n"
+                + "	TO_Y real,\n"
+                + "	ValidationTravelTime real,\n"
+                + "	ValidationDistance real\n"
+                + ");";
+
+        try (Connection connection = this.connection();
+             Statement statement = connection.createStatement()) {
+            // create a new table
+            statement.execute(sqlCreate);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void InsertAPI(String TriPId, Double From_X, Double From_Y, Double To_X, Double To_Y, Double ValidationTravelTime, Double ValidationDistance){
+        String url = "jdbc:sqlite:E:\\TU_Berlin\\Masterarbeit\\project-space\\lib\\TripInfo.db";
+
+        String sqlInsert ="INSERT INTO TripInfo(TripId,From_X,From_Y,To_X, To_Y,ValidationTravelTime,ValidationDistance)VALUES(?,?,?.?,?,?,?)";
+
+        try (Connection connection=this.connection();
+             PreparedStatement preparedStatement =connection.prepareStatement(sqlInsert))
+        {
+            preparedStatement.setString(1,TriPId);
+            preparedStatement.setDouble(2,From_X);
+            preparedStatement.setDouble(3,From_Y);
+            preparedStatement.setDouble(4,To_X);
+            preparedStatement.setDouble(5,To_Y);
+            preparedStatement.setDouble(6,ValidationTravelTime);
+            preparedStatement.setDouble(7,ValidationDistance);
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
 
     public void createTripInfoTable() {
         // SQLite connection string

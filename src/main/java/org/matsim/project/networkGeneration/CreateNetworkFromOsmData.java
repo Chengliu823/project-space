@@ -54,156 +54,20 @@ public class CreateNetworkFromOsmData implements MATSimAppCommand {
     @Override
     public Integer call() throws Exception {
         SpeedData speedData = new SpeedData();
-                switch (SpeedGroup){
-                    case 1:
-                        speedData.setFreeSpeed_Motorway(108/3.6);
-                        speedData.setFreeSpeed_MotorwayLink(90/3.6);
-                        speedData.setFreeSpeed_Trunk(90/3.6);
-                        speedData.setFreeSpeed_TrunkLink(90/3.6);
-                        speedData.setFreeSpeed_Primary(72/3.6);
-                        speedData.setFreeSpeed_PrimaryLink(72/3.6);
-                        speedData.setFreeSpeed_Secondary(54/3.6);
-                        speedData.setFreeSpeed_SecondaryLink(54/3.6);
-                        speedData.setFreeSpeed_Tertiary(54/3.6);
-                        speedData.setFreeSpeed_TertiaryLink(54/3.6);
-                        speedData.setFreeSpeed_Residential(27/3.6);
-                        speedData.setFreeSpeed_Unclassified(27/3.6);
-                        break;
-
-                    case 2:
-                        speedData.setFreeSpeed_Motorway(114/3.6);
-                        speedData.setFreeSpeed_MotorwayLink(95/3.6);
-                        speedData.setFreeSpeed_Trunk(95/3.6);
-                        speedData.setFreeSpeed_TrunkLink(95/3.6);
-                        speedData.setFreeSpeed_Primary(76/3.6);
-                        speedData.setFreeSpeed_PrimaryLink(76/3.6);
-                        speedData.setFreeSpeed_Secondary(57/3.6);
-                        speedData.setFreeSpeed_SecondaryLink(57/3.6);
-                        speedData.setFreeSpeed_Tertiary(57/3.6);
-                        speedData.setFreeSpeed_TertiaryLink(57/3.6);
-                        speedData.setFreeSpeed_Residential(28.5/3.6);
-                        speedData.setFreeSpeed_Unclassified(28.5/3.6);
-                        break;
-
-                    case 3:
-                        speedData.setFreeSpeed_Motorway(120/3.6);
-                        speedData.setFreeSpeed_MotorwayLink(100/3.6);
-                        speedData.setFreeSpeed_Trunk(100/3.6);
-                        speedData.setFreeSpeed_TrunkLink(100/3.6);
-                        speedData.setFreeSpeed_Primary(80/3.6);
-                        speedData.setFreeSpeed_PrimaryLink(80/3.6);
-                        speedData.setFreeSpeed_Secondary(60/3.6);
-                        speedData.setFreeSpeed_SecondaryLink(60/3.6);
-                        speedData.setFreeSpeed_Tertiary(60/3.6);
-                        speedData.setFreeSpeed_TertiaryLink(60/3.6);
-                        speedData.setFreeSpeed_Residential(30/3.6);
-                        speedData.setFreeSpeed_Unclassified(30/3.6);
-                        break;
-
-                    case 4:
-                        speedData.setFreeSpeed_Motorway(126/3.6);
-                        speedData.setFreeSpeed_MotorwayLink(105/3.6);
-                        speedData.setFreeSpeed_Trunk(105/3.6);
-                        speedData.setFreeSpeed_TrunkLink(105/3.6);
-                        speedData.setFreeSpeed_Primary(84/3.6);
-                        speedData.setFreeSpeed_PrimaryLink(84/3.6);
-                        speedData.setFreeSpeed_Secondary(63/3.6);
-                        speedData.setFreeSpeed_SecondaryLink(63/3.6);
-                        speedData.setFreeSpeed_Tertiary(63/3.6);
-                        speedData.setFreeSpeed_TertiaryLink(63/3.6);
-                        speedData.setFreeSpeed_Residential(31.5/3.6);
-                        speedData.setFreeSpeed_Unclassified(31.5/3.6);
-                        break;
-
-                    case 5:
-                        speedData.setFreeSpeed_Motorway(132/3.6);
-                        speedData.setFreeSpeed_MotorwayLink(110/3.6);
-                        speedData.setFreeSpeed_Trunk(110/3.6);
-                        speedData.setFreeSpeed_TrunkLink(110/3.6);
-                        speedData.setFreeSpeed_Primary(88/3.6);
-                        speedData.setFreeSpeed_PrimaryLink(88/3.6);
-                        speedData.setFreeSpeed_Secondary(66/3.6);
-                        speedData.setFreeSpeed_SecondaryLink(66/3.6);
-                        speedData.setFreeSpeed_Tertiary(66/3.6);
-                        speedData.setFreeSpeed_TertiaryLink(66/3.6);
-                        speedData.setFreeSpeed_Residential(33/3.6);
-                        speedData.setFreeSpeed_Unclassified(33/3.6);
-                        break;
-
-                    case 6:
-                        speedData.setFreeSpeed_Motorway(125/3.6);
-                        speedData.setFreeSpeed_MotorwayLink(104/3.6);
-                        speedData.setFreeSpeed_Trunk(104/3.6);
-                        speedData.setFreeSpeed_TrunkLink(104/3.6);
-                        speedData.setFreeSpeed_Primary(80/3.6);
-                        speedData.setFreeSpeed_PrimaryLink(80/3.6);
-                        speedData.setFreeSpeed_Secondary(60/3.6);
-                        speedData.setFreeSpeed_SecondaryLink(60/3.6);
-                        speedData.setFreeSpeed_Tertiary(60/3.6);
-                        speedData.setFreeSpeed_TertiaryLink(60/3.6);
-                        speedData.setFreeSpeed_Residential(30/3.6);
-                        speedData.setFreeSpeed_Unclassified(30/3.6);
-                        break;
-
-                    case 7:
-                        speedData.setFreeSpeed_Motorway(105/3.6);
-                        speedData.setFreeSpeed_MotorwayLink(88/3.6);
-                        speedData.setFreeSpeed_Trunk(88/3.6);
-                        speedData.setFreeSpeed_TrunkLink(88/3.6);
-                        speedData.setFreeSpeed_Primary(70/3.6);
-                        speedData.setFreeSpeed_PrimaryLink(70/3.6);
-                        speedData.setFreeSpeed_Secondary(52/3.6);
-                        speedData.setFreeSpeed_SecondaryLink(52/3.6);
-                        speedData.setFreeSpeed_Tertiary(52/3.6);
-                        speedData.setFreeSpeed_TertiaryLink(52/3.6);
-                        speedData.setFreeSpeed_Residential(27/3.6);
-                        speedData.setFreeSpeed_Unclassified(27/3.6);
-                        break;
-
-                    case 8:
-                        speedData.setFreeSpeed_Motorway(100/3.6);
-                        speedData.setFreeSpeed_MotorwayLink(82/3.6);
-                        speedData.setFreeSpeed_Trunk(82/3.6);
-                        speedData.setFreeSpeed_TrunkLink(82/3.6);
-                        speedData.setFreeSpeed_Primary(65/3.6);
-                        speedData.setFreeSpeed_PrimaryLink(65/3.6);
-                        speedData.setFreeSpeed_Secondary(50/3.6);
-                        speedData.setFreeSpeed_SecondaryLink(50/3.6);
-                        speedData.setFreeSpeed_Tertiary(50/3.6);
-                        speedData.setFreeSpeed_TertiaryLink(50/3.6);
-                        speedData.setFreeSpeed_Residential(25/3.6);
-                        speedData.setFreeSpeed_Unclassified(25/3.6);
-                        break;
-
-                    case 9:
-                        speedData.setFreeSpeed_Motorway(103/3.6);
-                        speedData.setFreeSpeed_MotorwayLink(85/3.6);
-                        speedData.setFreeSpeed_Trunk(85/3.6);
-                        speedData.setFreeSpeed_TrunkLink(85/3.6);
-                        speedData.setFreeSpeed_Primary(67/3.6);
-                        speedData.setFreeSpeed_PrimaryLink(67/3.6);
-                        speedData.setFreeSpeed_Secondary(51/3.6);
-                        speedData.setFreeSpeed_SecondaryLink(51/3.6);
-                        speedData.setFreeSpeed_Tertiary(51/3.6);
-                        speedData.setFreeSpeed_TertiaryLink(51/3.6);
-                        speedData.setFreeSpeed_Residential(26/3.6);
-                        speedData.setFreeSpeed_Unclassified(26/3.6);
-                        break;
-                }
-
+        ChoiceSpeedGroup(SpeedGroup);
         Network network = new SupersonicOsmNetworkReader.Builder()
-                .addOverridingLinkProperties(OsmTags.MOTORWAY, new LinkProperties(1, 2, speedData.freeSpeed_Motorway, 3600, true))
-                .addOverridingLinkProperties(OsmTags.MOTORWAY_LINK, new LinkProperties(1, 1, speedData.freeSpeed_MotorwayLink, 3600, true))
-                .addOverridingLinkProperties(OsmTags.TRUNK, new LinkProperties(1, 1, speedData.freeSpeed_Trunk, 3600, false))
-                .addOverridingLinkProperties(OsmTags.TRUNK_LINK, new LinkProperties(1, 1, speedData.freeSpeed_TrunkLink, 3600, false))
-                .addOverridingLinkProperties(OsmTags.PRIMARY, new LinkProperties(1, 1, speedData.freeSpeed_Primary, 1800, false))
-                .addOverridingLinkProperties(OsmTags.PRIMARY_LINK, new LinkProperties(1, 1, speedData.freeSpeed_PrimaryLink, 1800, false))
-                .addOverridingLinkProperties(OsmTags.SECONDARY, new LinkProperties(1, 1, speedData.freeSpeed_Secondary, 1200, false))
-                .addOverridingLinkProperties(OsmTags.SECONDARY_LINK, new LinkProperties(1, 1, speedData.freeSpeed_SecondaryLink, 1200, false))
-                .addOverridingLinkProperties(OsmTags.TERTIARY, new LinkProperties(1, 1, speedData.freeSpeed_Tertiary, 900, false))
-                .addOverridingLinkProperties(OsmTags.TERTIARY_LINK, new LinkProperties(1, 1,speedData.freeSpeed_TertiaryLink, 900, false))
-                .addOverridingLinkProperties(OsmTags.RESIDENTIAL, new LinkProperties(1, 1, speedData.freeSpeed_Residential, 600, false))
-                .addOverridingLinkProperties(OsmTags.UNCLASSIFIED, new LinkProperties(1, 1, speedData.freeSpeed_Unclassified, 600, false))
+                .addOverridingLinkProperties(OsmTags.MOTORWAY, new LinkProperties(1, 2, speedData.getFreeSpeed_Motorway(), 3600, true))
+                .addOverridingLinkProperties(OsmTags.MOTORWAY_LINK, new LinkProperties(1, 1, speedData.getFreeSpeed_MotorwayLink(), 3600, true))
+                .addOverridingLinkProperties(OsmTags.TRUNK, new LinkProperties(1, 1, speedData.getFreeSpeed_Trunk(), 3600, false))
+                .addOverridingLinkProperties(OsmTags.TRUNK_LINK, new LinkProperties(1, 1, speedData.getFreeSpeed_TrunkLink(), 3600, false))
+                .addOverridingLinkProperties(OsmTags.PRIMARY, new LinkProperties(1, 1, speedData.getFreeSpeed_Primary(), 1800, false))
+                .addOverridingLinkProperties(OsmTags.PRIMARY_LINK, new LinkProperties(1, 1, speedData.getFreeSpeed_PrimaryLink(), 1800, false))
+                .addOverridingLinkProperties(OsmTags.SECONDARY, new LinkProperties(1, 1, speedData.getFreeSpeed_Secondary(), 1200, false))
+                .addOverridingLinkProperties(OsmTags.SECONDARY_LINK, new LinkProperties(1, 1, speedData.getFreeSpeed_SecondaryLink(), 1200, false))
+                .addOverridingLinkProperties(OsmTags.TERTIARY, new LinkProperties(1, 1, speedData.getFreeSpeed_Tertiary(), 900, false))
+                .addOverridingLinkProperties(OsmTags.TERTIARY_LINK, new LinkProperties(1, 1,speedData.getFreeSpeed_TertiaryLink(), 900, false))
+                .addOverridingLinkProperties(OsmTags.RESIDENTIAL, new LinkProperties(1, 1, speedData.getFreeSpeed_Residential(), 600, false))
+                .addOverridingLinkProperties(OsmTags.UNCLASSIFIED, new LinkProperties(1, 1, speedData.getFreeSpeed_Unclassified(), 600, false))
                 .setCoordinateTransformation(crs.getTransformation())
                 .setPreserveNodeWithId(id -> id == 2)
                 .setAfterLinkCreated((link, osmTags, isReverse) -> link.setAllowedModes(new HashSet<>(List.of(TransportMode.car))))
@@ -257,5 +121,129 @@ public class CreateNetworkFromOsmData implements MATSimAppCommand {
         return 0;
     }
 
+    public static void ChoiceSpeedGroup(int speedGroup){
+        SpeedData speedData = new SpeedData();
+        switch (speedGroup){
+            case 1:
+                speedData.setFreeSpeed_Motorway(108/3.6);
+                speedData.setFreeSpeed_MotorwayLink(90/3.6);
+                speedData.setFreeSpeed_Trunk(90/3.6);
+                speedData.setFreeSpeed_TrunkLink(90/3.6);
+                speedData.setFreeSpeed_Primary(72/3.6);
+                speedData.setFreeSpeed_PrimaryLink(72/3.6);
+                speedData.setFreeSpeed_Secondary(54/3.6);
+                speedData.setFreeSpeed_SecondaryLink(54/3.6);
+                speedData.setFreeSpeed_Tertiary(54/3.6);
+                speedData.setFreeSpeed_TertiaryLink(54/3.6);
+                speedData.setFreeSpeed_Residential(27/3.6);
+                speedData.setFreeSpeed_Unclassified(27/3.6);
+                break;
 
+            case 2:
+                speedData.setFreeSpeed_Motorway(114/3.6);
+                speedData.setFreeSpeed_MotorwayLink(95/3.6);
+                speedData.setFreeSpeed_Trunk(95/3.6);
+                speedData.setFreeSpeed_TrunkLink(95/3.6);
+                speedData.setFreeSpeed_Primary(76/3.6);
+                speedData.setFreeSpeed_PrimaryLink(76/3.6);
+                speedData.setFreeSpeed_Secondary(57/3.6);
+                speedData.setFreeSpeed_SecondaryLink(57/3.6);
+                speedData.setFreeSpeed_Tertiary(57/3.6);
+                speedData.setFreeSpeed_TertiaryLink(57/3.6);
+                speedData.setFreeSpeed_Residential(28.5/3.6);
+                speedData.setFreeSpeed_Unclassified(28.5/3.6);
+                break;
+
+            case 3:
+            default:
+                speedData.setFreeSpeed_Motorway(120/3.6);
+                speedData.setFreeSpeed_MotorwayLink(100/3.6);
+                speedData.setFreeSpeed_Trunk(100/3.6);
+                speedData.setFreeSpeed_TrunkLink(100/3.6);
+                speedData.setFreeSpeed_Primary(80/3.6);
+                speedData.setFreeSpeed_PrimaryLink(80/3.6);
+                speedData.setFreeSpeed_Secondary(60/3.6);
+                speedData.setFreeSpeed_SecondaryLink(60/3.6);
+                speedData.setFreeSpeed_Tertiary(60/3.6);
+                speedData.setFreeSpeed_TertiaryLink(60/3.6);
+                speedData.setFreeSpeed_Residential(30/3.6);
+                speedData.setFreeSpeed_Unclassified(30/3.6);
+                break;
+
+            case 4:
+                speedData.setFreeSpeed_Motorway(126/3.6);
+                speedData.setFreeSpeed_MotorwayLink(105/3.6);
+                speedData.setFreeSpeed_Trunk(105/3.6);
+                speedData.setFreeSpeed_TrunkLink(105/3.6);
+                speedData.setFreeSpeed_Primary(84/3.6);
+                speedData.setFreeSpeed_PrimaryLink(84/3.6);
+                speedData.setFreeSpeed_Secondary(63/3.6);
+                speedData.setFreeSpeed_SecondaryLink(63/3.6);
+                speedData.setFreeSpeed_Tertiary(63/3.6);
+                speedData.setFreeSpeed_TertiaryLink(63/3.6);
+                speedData.setFreeSpeed_Residential(31.5/3.6);
+                speedData.setFreeSpeed_Unclassified(31.5/3.6);
+                break;
+
+            case 5:
+                speedData.setFreeSpeed_Motorway(132/3.6);
+                speedData.setFreeSpeed_MotorwayLink(110/3.6);
+                speedData.setFreeSpeed_Trunk(110/3.6);
+                speedData.setFreeSpeed_TrunkLink(110/3.6);
+                speedData.setFreeSpeed_Primary(88/3.6);
+                speedData.setFreeSpeed_PrimaryLink(88/3.6);
+                speedData.setFreeSpeed_Secondary(66/3.6);
+                speedData.setFreeSpeed_SecondaryLink(66/3.6);
+                speedData.setFreeSpeed_Tertiary(66/3.6);
+                speedData.setFreeSpeed_TertiaryLink(66/3.6);
+                speedData.setFreeSpeed_Residential(33/3.6);
+                speedData.setFreeSpeed_Unclassified(33/3.6);
+                break;
+
+            case 6:
+                speedData.setFreeSpeed_Motorway(125/3.6);
+                speedData.setFreeSpeed_MotorwayLink(104/3.6);
+                speedData.setFreeSpeed_Trunk(104/3.6);
+                speedData.setFreeSpeed_TrunkLink(104/3.6);
+                speedData.setFreeSpeed_Primary(80/3.6);
+                speedData.setFreeSpeed_PrimaryLink(80/3.6);
+                speedData.setFreeSpeed_Secondary(60/3.6);
+                speedData.setFreeSpeed_SecondaryLink(60/3.6);
+                speedData.setFreeSpeed_Tertiary(60/3.6);
+                speedData.setFreeSpeed_TertiaryLink(60/3.6);
+                speedData.setFreeSpeed_Residential(30/3.6);
+                speedData.setFreeSpeed_Unclassified(30/3.6);
+                break;
+
+            case 7:
+                speedData.setFreeSpeed_Motorway(105/3.6);
+                speedData.setFreeSpeed_MotorwayLink(88/3.6);
+                speedData.setFreeSpeed_Trunk(88/3.6);
+                speedData.setFreeSpeed_TrunkLink(88/3.6);
+                speedData.setFreeSpeed_Primary(70/3.6);
+                speedData.setFreeSpeed_PrimaryLink(70/3.6);
+                speedData.setFreeSpeed_Secondary(52/3.6);
+                speedData.setFreeSpeed_SecondaryLink(52/3.6);
+                speedData.setFreeSpeed_Tertiary(52/3.6);
+                speedData.setFreeSpeed_TertiaryLink(52/3.6);
+                speedData.setFreeSpeed_Residential(27/3.6);
+                speedData.setFreeSpeed_Unclassified(27/3.6);
+                break;
+
+            case 8:
+                speedData.setFreeSpeed_Motorway(100/3.6);
+                speedData.setFreeSpeed_MotorwayLink(82/3.6);
+                speedData.setFreeSpeed_Trunk(82/3.6);
+                speedData.setFreeSpeed_TrunkLink(82/3.6);
+                speedData.setFreeSpeed_Primary(65/3.6);
+                speedData.setFreeSpeed_PrimaryLink(65/3.6);
+                speedData.setFreeSpeed_Secondary(50/3.6);
+                speedData.setFreeSpeed_SecondaryLink(50/3.6);
+                speedData.setFreeSpeed_Tertiary(50/3.6);
+                speedData.setFreeSpeed_TertiaryLink(50/3.6);
+                speedData.setFreeSpeed_Residential(25/3.6);
+                speedData.setFreeSpeed_Unclassified(25/3.6);
+                break;
+        }
+    }
 }
