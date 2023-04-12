@@ -1,5 +1,3 @@
-
-
 package org.matsim.project.networkGeneration;
 
 import org.apache.commons.csv.CSVFormat;
@@ -9,6 +7,7 @@ import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.TransportMode;
 import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
+import org.matsim.api.core.v01.network.NetworkWriter;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.Population;
 import org.matsim.application.MATSimAppCommand;
@@ -31,6 +30,7 @@ import org.matsim.core.utils.geometry.transformations.GeotoolsTransformation;
 import picocli.CommandLine;
 
 import java.io.FileWriter;
+import java.nio.file.Path;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
@@ -61,6 +61,8 @@ public class NetworkValidation implements MATSimAppCommand {
     @CommandLine.Option(names = "--max-validation", description = "output folder for the route calculation", defaultValue = "2000")
     private double maxValidations;
 
+    @CommandLine.Option(names = "--improveOutput", description = "output network file", required = true)
+    private Path improveOutput;
     private enum API {
         HERE, GOOGLE_MAP, NETWORK_FILE
     }
@@ -76,14 +78,14 @@ public class NetworkValidation implements MATSimAppCommand {
 
         List<LinkInfo> linkInfoList = new ArrayList<>();
         List<AlgorithmsLink> algorithmsLinkList = new ArrayList<>();
-        List<AlgorithmsLink> improveLinkList = new ArrayList<>();
+        List<AlgorithmsLink> improveLinkList;
         Map<Id<Link>, Double> idCollectionMap = new HashMap<>();
 
         List<TripInfo> tripInfoList = new ArrayList<>();
 
-        double firstScore =0;
-        double firstTravelTimeDeviation =0;
-        double firstDistanceDeviation =0;
+        double firstScore;
+        double firstTravelTimeDeviation;
+        double firstDistanceDeviation;
         int validationZeroCount=0;
 
         CoordinateTransformation ct = new GeotoolsTransformation("EPSG:25832", "EPSG:4326");
@@ -235,7 +237,7 @@ public class NetworkValidation implements MATSimAppCommand {
                         validatedCount++;
                         Thread.sleep(100);
                     }
-                    if (validatedCount >= maxValidations) {
+                    if (validatedCount >= tripInfoList.size()) {
                         break;
                     }
                 }
@@ -256,9 +258,11 @@ public class NetworkValidation implements MATSimAppCommand {
 
             double bestFreeSpeed = AlgorithmsUtils.listSort(improveScoreList);
             improveLink.setFreespeed(bestFreeSpeed);
+            System.out.println("improve times ="+i + "max validation times ="+improveLinkList.size());
         }
 
         tsvWriter.close();
+        new NetworkWriter(network).write(improveOutput.toString());
         return 0;
     }
 
