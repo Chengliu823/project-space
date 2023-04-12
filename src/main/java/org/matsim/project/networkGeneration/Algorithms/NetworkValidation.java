@@ -1,4 +1,4 @@
-package org.matsim.project.networkGeneration;
+package org.matsim.project.networkGeneration.Algorithms;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -160,9 +160,12 @@ public class NetworkValidation implements MATSimAppCommand {
                 }else {
                     validationZeroCount++;
                 }
-                for (int i1 = 0; i1 < linkInfoList.size(); i1++) {
+               /*
+               for (int i1 = 0; i1 < linkInfoList.size(); i1++) {
                     System.out.println("Network travel time"+linkInfoList.get(i1).getNetworkTravelTime()+"validation travel Time"+linkInfoList.get(i1).getValidationTravelTime()+"network distance"+linkInfoList.get(i1).getNetworkDistance()+"validation distance"+linkInfoList.get(i1).getValidationDistance());
                 }
+
+                */
 
                 validated++;
                 personTripCounter++;
@@ -259,7 +262,8 @@ public class NetworkValidation implements MATSimAppCommand {
             double bestFreeSpeed = AlgorithmsUtils.listSort(improveScoreList);
             improveLink.setFreespeed(bestFreeSpeed);
 
-            System.out.println("improve times ="+i + "max validation times ="+improveLinkList.size());
+            double maximalImproveTimes =improveLinkList.size()-1;
+            System.out.println("improve times ="+i + "max improve times ="+maximalImproveTimes);
         }
 
         tsvWriter.close();

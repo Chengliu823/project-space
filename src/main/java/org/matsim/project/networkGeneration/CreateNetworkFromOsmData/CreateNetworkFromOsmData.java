@@ -1,4 +1,4 @@
-package org.matsim.project.networkGeneration;
+package org.matsim.project.networkGeneration.CreateNetworkFromOsmData;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

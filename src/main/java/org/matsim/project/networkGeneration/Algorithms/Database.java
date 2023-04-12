@@ -1,10 +1,4 @@
-package org.matsim.project.networkGeneration;
-
-import com.beust.jcommander.IValueValidator;
-import org.jaitools.numeric.Statistic;
-import org.junit.jupiter.api.Test;
-import org.matsim.api.core.v01.Coord;
-import org.matsim.api.core.v01.network.Link;
+package org.matsim.project.networkGeneration.Algorithms;
 
 import java.sql.*;
 
@@ -27,7 +21,8 @@ public class Database {
         database.Insert("T3",5.4,5.7);
         //database.deleteTripInfoTable();
         database.selectTripInfoTable("T2");
-
+        database.createAPITable();
+        database.InsertAPI("T1",1.1,1.2,1.3,1.4,1.5,1.6);
 
     }
 

@@ -1,4 +1,4 @@
-package org.matsim.project.networkGeneration;
+package org.matsim.project.networkGeneration.Algorithms;
 
 public class TripInfo extends LinkInfo{
     private String tripId;
