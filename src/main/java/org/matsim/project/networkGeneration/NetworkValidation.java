@@ -258,6 +258,7 @@ public class NetworkValidation implements MATSimAppCommand {
 
             double bestFreeSpeed = AlgorithmsUtils.listSort(improveScoreList);
             improveLink.setFreespeed(bestFreeSpeed);
+
             System.out.println("improve times ="+i + "max validation times ="+improveLinkList.size());
         }
 
