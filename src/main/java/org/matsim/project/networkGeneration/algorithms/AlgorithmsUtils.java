@@ -1,4 +1,4 @@
-package org.matsim.project.networkGeneration.Algorithms;
+package org.matsim.project.networkGeneration.algorithms;
 
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
@@ -9,7 +9,7 @@ public class AlgorithmsUtils {
     private AlgorithmsUtils(){}
 
     public static double listSort (List<ImproveScore> improveScoreList){
-        double bestFreeSpeed =0;
+        double bestFreeSpeed;
         int index =0;
         double score =improveScoreList.get(index).getImproveScore();
 
@@ -89,13 +89,14 @@ public class AlgorithmsUtils {
        3.将每组travelTime简单相处，即travelTime/validation
        4.相加结果，再除以有效验证次数
      */
-    public static double travelTimeDeviation (List<LinkInfo> linkInfoList){
+    public static double travelTimeDeviation (List<RouteInfo> routeInfoList){
         List<Double> travelTimeQuotientList =new ArrayList<>();
         double travelTimeQuotientSum =0;
         double result;
-        for (int i = 0; i < linkInfoList.size(); i++) {
-            travelTimeQuotientList.add(linkInfoList.get(i).getNetworkTravelTime()/linkInfoList.get(i).getValidationTravelTime());
+        for (int i = 0; i < routeInfoList.size(); i++) {
+            travelTimeQuotientList.add(routeInfoList.get(i).getNetworkTravelTime()/ routeInfoList.get(i).getValidationTravelTime());
         }
+
         for (int i = 0; i < travelTimeQuotientList.size(); i++) {
             travelTimeQuotientSum+= travelTimeQuotientList.get(i);
         }
@@ -114,12 +115,12 @@ public class AlgorithmsUtils {
        3.相加结果，再将结果除以有效验证次数
      */
 
-    public static double distanceDeviation (List<LinkInfo> linkInfoList){
+    public static double distanceDeviation (List<RouteInfo> routeInfoList){
         List<Double> distanceQuotientList = new ArrayList<>();
         double distanceQuotientSum =0;
-        double result =0;
-        for (int i = 0; i < linkInfoList.size(); i++) {
-            distanceQuotientList.add(linkInfoList.get(i).getNetworkDistance()/linkInfoList.get(i).getValidationDistance());
+        double result;
+        for (int i = 0; i < routeInfoList.size(); i++) {
+            distanceQuotientList.add(routeInfoList.get(i).getNetworkDistance()/ routeInfoList.get(i).getValidationDistance());
         }
         for (int i = 0; i < distanceQuotientList.size(); i++) {
             distanceQuotientSum += distanceQuotientList.get(i);
@@ -135,7 +136,7 @@ public class AlgorithmsUtils {
        2.计算Network减去Validation的差值，将差值转化为绝对值
        3.Network与validation之间差值的绝对值的和的平均数除以validation值的平均数
  */
-    public static double scoreCalculation (List<LinkInfo> linkInfoList){
+    public static double scoreCalculation (List<RouteInfo> routeInfoList){
         double validationTravelTimeSum=0.0;
         double validationDistanceSum=0.0;
         double avg_validationTravelTime;
@@ -149,16 +150,16 @@ public class AlgorithmsUtils {
         List<Double> abs_NetworkValidationTravelTimeDifferenceList = new ArrayList<>();
         List<Double> abs_NetworkValidationDistanceDifferenceList = new ArrayList<>();
 
-        for (LinkInfo linkInfo : linkInfoList) {
-            validationTravelTimeSum += linkInfo.getValidationTravelTime();
-            validationDistanceSum += linkInfo.getValidationDistance();
+        for (RouteInfo routeInfo : routeInfoList) {
+            validationTravelTimeSum += routeInfo.getValidationTravelTime();
+            validationDistanceSum += routeInfo.getValidationDistance();
 
-            abs_NetworkValidationTravelTimeDifferenceList.add(Math.abs(linkInfo.getNetworkTravelTime() - linkInfo.getValidationTravelTime()));
-            abs_NetworkValidationDistanceDifferenceList.add(Math.abs(linkInfo.getNetworkDistance() - linkInfo.getValidationDistance()));
+            abs_NetworkValidationTravelTimeDifferenceList.add(Math.abs(routeInfo.getNetworkTravelTime() - routeInfo.getValidationTravelTime()));
+            abs_NetworkValidationDistanceDifferenceList.add(Math.abs(routeInfo.getNetworkDistance() - routeInfo.getValidationDistance()));
         }
 
-        avg_validationTravelTime =validationTravelTimeSum/linkInfoList.size();
-        avg_validationDistance=validationDistanceSum/linkInfoList.size();
+        avg_validationTravelTime =validationTravelTimeSum/ routeInfoList.size();
+        avg_validationDistance=validationDistanceSum/ routeInfoList.size();
 
         for (Double aDouble : abs_NetworkValidationTravelTimeDifferenceList) {
             abs_NetworkValidationTravelTimeDifferenceSum += aDouble;

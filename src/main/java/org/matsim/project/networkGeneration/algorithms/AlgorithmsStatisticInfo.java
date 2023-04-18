@@ -1,4 +1,4 @@
-package org.matsim.project.networkGeneration.Algorithms;
+package org.matsim.project.networkGeneration.algorithms;
 
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;

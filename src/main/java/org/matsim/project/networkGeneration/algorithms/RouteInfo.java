@@ -1,19 +1,17 @@
-package org.matsim.project.networkGeneration.Algorithms;
+package org.matsim.project.networkGeneration.algorithms;
 
-import org.matsim.api.core.v01.Id;
-import org.matsim.api.core.v01.network.Link;
-
-public class LinkInfo {
+//routeInfo
+public class RouteInfo {
     private double networkTravelTime;
     private double NetworkDistance;
     private double validationTravelTime;
     private double validationDistance;
 
 
-    public LinkInfo() {
+    public RouteInfo() {
     }
 
-    public LinkInfo(double networkTravelTime, double networkDistance, double validationTravelTime, double validationDistance) {
+    public RouteInfo(double networkTravelTime, double networkDistance, double validationTravelTime, double validationDistance) {
         this.networkTravelTime = networkTravelTime;
         this.NetworkDistance = networkDistance;
         this.validationTravelTime = validationTravelTime;

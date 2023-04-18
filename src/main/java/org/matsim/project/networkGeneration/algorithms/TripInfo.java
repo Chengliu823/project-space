@@ -1,6 +1,6 @@
-package org.matsim.project.networkGeneration.Algorithms;
+package org.matsim.project.networkGeneration.algorithms;
 
-public class TripInfo extends LinkInfo{
+public class TripInfo extends RouteInfo {
     private String tripId;
     private double fromX;
     private double fromY;

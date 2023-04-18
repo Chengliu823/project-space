@@ -1,4 +1,4 @@
-package org.matsim.project.networkGeneration.Algorithms;
+package org.matsim.project.networkGeneration.algorithms;
 
 public class ImproveScore {
     private double freeSpeed;

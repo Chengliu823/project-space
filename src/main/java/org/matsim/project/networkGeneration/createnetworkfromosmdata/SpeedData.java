@@ -1,4 +1,4 @@
-package org.matsim.project.networkGeneration.CreateNetworkFromOsmData;
+package org.matsim.project.networkGeneration.createnetworkfromosmdata;
 
 public class SpeedData {
 
