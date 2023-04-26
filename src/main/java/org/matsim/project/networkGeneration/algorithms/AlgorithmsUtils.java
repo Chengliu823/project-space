@@ -8,6 +8,19 @@ import java.util.*;
 public class AlgorithmsUtils {
     private AlgorithmsUtils(){}
 
+    public static int scoreSort(List<ScoreInfo> scoreList){
+        int index =0;
+        double score =scoreList.get(index).getTravelTimeScore();
+
+        for (int i = 0; i < scoreList.size(); i++) {
+            double temScore = scoreList.get(i).getTravelTimeScore();
+            if (score<= temScore){
+                index =i;
+            }
+        }
+
+        return index;
+    }
     public static double listSort (List<ImproveScore> improveScoreList){
         double bestFreeSpeed;
         int index =0;
@@ -136,43 +149,56 @@ public class AlgorithmsUtils {
        2.计算Network减去Validation的差值，将差值转化为绝对值
        3.Network与validation之间差值的绝对值的和的平均数除以validation值的平均数
  */
-    public static double scoreCalculation (List<RouteInfo> routeInfoList){
+
+    //这一步可以用抽象解决，之后改
+    public static double travelTimeScoreCalculation(List<RouteInfo> routeInfoList){
         double validationTravelTimeSum=0.0;
-        double validationDistanceSum=0.0;
         double avg_validationTravelTime;
-        double avg_validationDistance;
         double abs_NetworkValidationTravelTimeDifferenceSum =0.0;
-        double abs_NetworkValidationDistanceDifferenceSum =0.0;
         double scoreNetworkTravelTime;
-        double scoreNetworkDistance;
-        double totalScore;
+        double validationTravelTime;
+
 
         List<Double> abs_NetworkValidationTravelTimeDifferenceList = new ArrayList<>();
-        List<Double> abs_NetworkValidationDistanceDifferenceList = new ArrayList<>();
 
         for (RouteInfo routeInfo : routeInfoList) {
-            validationTravelTimeSum += routeInfo.getValidationTravelTime();
-            validationDistanceSum += routeInfo.getValidationDistance();
+            validationTravelTime=routeInfo.getValidationTravelTime();
+            validationTravelTimeSum += validationTravelTime;
 
-            abs_NetworkValidationTravelTimeDifferenceList.add(Math.abs(routeInfo.getNetworkTravelTime() - routeInfo.getValidationTravelTime()));
-            abs_NetworkValidationDistanceDifferenceList.add(Math.abs(routeInfo.getNetworkDistance() - routeInfo.getValidationDistance()));
+            abs_NetworkValidationTravelTimeDifferenceList.add(Math.abs(routeInfo.getNetworkTravelTime() - validationTravelTime));
         }
 
         avg_validationTravelTime =validationTravelTimeSum/ routeInfoList.size();
-        avg_validationDistance=validationDistanceSum/ routeInfoList.size();
 
         for (Double aDouble : abs_NetworkValidationTravelTimeDifferenceList) {
             abs_NetworkValidationTravelTimeDifferenceSum += aDouble;
         }
         scoreNetworkTravelTime = (abs_NetworkValidationTravelTimeDifferenceSum/abs_NetworkValidationTravelTimeDifferenceList.size())/avg_validationTravelTime;
 
+        return scoreNetworkTravelTime;
+    }
+
+    public static double distanceScoreCalculation(List<RouteInfo> routeInfoList){
+        double validationDistanceSum=0.0;
+        double avg_validationDistance = 0;
+        double abs_NetworkValidationDistanceDifferenceSum =0.0;
+        double scoreNetworkDistance;
+
+        List<Double> abs_NetworkValidationDistanceDifferenceList = new ArrayList<>();
+
+        for (RouteInfo routeInfo : routeInfoList) {
+            validationDistanceSum += routeInfo.getValidationDistance();
+            abs_NetworkValidationDistanceDifferenceList.add(Math.abs(routeInfo.getNetworkDistance() - routeInfo.getValidationDistance()));
+        }
+
+        avg_validationDistance =validationDistanceSum/ routeInfoList.size();
+
         for (Double aDouble : abs_NetworkValidationDistanceDifferenceList) {
             abs_NetworkValidationDistanceDifferenceSum += aDouble;
         }
         scoreNetworkDistance =(abs_NetworkValidationDistanceDifferenceSum/abs_NetworkValidationDistanceDifferenceList.size())/avg_validationDistance;
 
-        totalScore =scoreNetworkDistance+scoreNetworkTravelTime;
 
-        return totalScore;
+        return scoreNetworkDistance;
     }
 }
