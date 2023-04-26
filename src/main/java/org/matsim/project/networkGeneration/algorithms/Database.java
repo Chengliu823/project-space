@@ -80,25 +80,24 @@ public class Database {
 
     }
 
-    public void selectTripInfoTable(String TripId){
-        String sqlSelectTripInfoTable ="SELECT TripId FROM TripInfo WHERE TripId=?";
-        List<Double> TripInfoList = new ArrayList<>();
+    /*
+        先SELECE COUNT(*) FROM table获取表格一共多少数据，然后写一个循环，循环次数是SELECE COUNT(*) FROM table的查询结果，循环的内容是SELECT id FROM table
+
+        使用语句select id form TripInfo 获取所有已存在id， 然后把所有id存放到一个list中，对list进行遍历，如果list中不存在该id则插入数据，如果存在该id则不插入数据
+
+     */
+
+    public void IdTripInfoTable(){
+        String sqlIdTripInfoTable ="SELECT id FROM TripInfo";
+        List<String> TripInfoList = new ArrayList<>();
 
 
-        try (Connection connection=this.connection();
-             PreparedStatement preparedStatement =connection.prepareStatement(sqlSelectTripInfoTable))
-        {
-            preparedStatement.setString(1,TripId);
-            preparedStatement.executeUpdate();
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()){
-                System.out.println(resultSet.getString(1)+resultSet.getDouble(2));
-            }
+        try (Connection connection = this.connection();
+             Statement statement = connection.createStatement()) {
+            statement.execute(sqlIdTripInfoTable);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-
 
     }
 
