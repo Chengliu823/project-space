@@ -14,13 +14,13 @@ public class Database {
 
 
     public static void main(String[] args) {
-        Database database= new Database();
-        database.dropTripInfoTable();
+        Database database = new Database();
         database.createTripInfoTable();
-        TripInfo tripInfo = new TripInfo("A001",21.5,22.5,21,5,8,6,4,8);
-        database.Insert(tripInfo);
-        //database.deleteTripInfoTable();
+        List<TripInfo> tripInfoList = infoList();
 
+        for (int i = 0; i < tripInfoList.size(); i++) {
+            System.out.println(tripInfoList.get(i).getTripId());
+        }
     }
 
 
@@ -38,10 +38,11 @@ public class Database {
     }
 
     public void createTripInfoTable() {
+        String url = "jdbc:sqlite:E:\\TU_Berlin\\Masterarbeit\\project-space\\lib\\TripInfo.db";
 
         // SQL statement for creating a new table
         String sqlCreate = "CREATE TABLE IF NOT EXISTS TripInfo (\n"
-                + "	TripId String,\n"
+                + "	TripId String PRIMARY KEY,\n"
                 + "	FromX real ,\n"
                 + "	FromY real ,\n"
                 + "	ToX real,\n"
@@ -58,6 +59,7 @@ public class Database {
             System.out.println(e.getMessage());
         }
     }
+
     public void dropTripInfoTable(){
         String sqlDelete="DROP TABLE TripInfo";
 
@@ -87,19 +89,34 @@ public class Database {
 
      */
 
-    public void IdTripInfoTable(){
-        String sqlIdTripInfoTable ="SELECT id FROM TripInfo";
-        List<String> TripInfoList = new ArrayList<>();
+    public static List<TripInfo> infoList(){
+        List<TripInfo> tripInfoList = new ArrayList<>();
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection =DriverManager.getConnection("jdbc:sqlite:E:\\TU_Berlin\\Masterarbeit\\project-space\\lib\\TripInfo.db");
+            preparedStatement =connection.prepareStatement("SELECT * FROM TripInfo");
+            resultSet =preparedStatement.executeQuery();
+            while (resultSet.next()){
+                String tripId =resultSet.getString(1);
+                double fromX = resultSet.getDouble(2);
+                double fromY = resultSet.getDouble(3);
+                double toX = resultSet.getDouble(4);
+                double toY = resultSet.getDouble(5);
+                double validationTravelTime = resultSet.getDouble(6);
+                double validationDistance = resultSet.getDouble(7);
+                TripInfo tripInfo = new TripInfo(tripId,fromX,fromY,toX,toY,0,validationTravelTime,0,validationDistance);
+                tripInfoList.add(tripInfo);
+            }
 
-
-        try (Connection connection = this.connection();
-             Statement statement = connection.createStatement()) {
-            statement.execute(sqlIdTripInfoTable);
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            throw new RuntimeException(e);
         }
-
+        return tripInfoList;
     }
+
+
 
     public void Insert(TripInfo tripInfo){
         String url = "jdbc:sqlite:E:\\TU_Berlin\\Masterarbeit\\project-space\\lib\\TripInfo.db";

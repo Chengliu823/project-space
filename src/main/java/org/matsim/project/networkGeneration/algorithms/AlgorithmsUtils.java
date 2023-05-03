@@ -13,8 +13,8 @@ public class AlgorithmsUtils {
         double score =scoreList.get(index).getTravelTimeScore();
 
         for (int i = 0; i < scoreList.size(); i++) {
-            double temScore = scoreList.get(i).getTravelTimeScore();
-            if (score<= temScore){
+            double tempScore = scoreList.get(i).getTravelTimeScore();
+            if (score<= tempScore){
                 index =i;
             }
         }
@@ -52,22 +52,25 @@ public class AlgorithmsUtils {
             idStatisticsList.add(val.getKey());
             idStatisticsCountList.add(val.getValue());
         }
+
         for (int i=0; i<idStatisticsCountList.size(); i++){
-            int minPosition =1;
+            int index =1;
             Integer min = idStatisticsCountList.get(i);
             for (int j = i+1; j<idStatisticsCountList.size(); j++){
                 if (idStatisticsCountList.get(j).compareTo(min)<0){
-                    minPosition = j;
+                    index = j;
                     min = idStatisticsCountList.get(j);
                 }
             }
-            if (minPosition != i){
-                Integer tempTimes = idStatisticsCountList.get(i);
-                idStatisticsCountList.set(i,min);
-                idStatisticsCountList.set(minPosition,tempTimes);
+            if (index != i){
+                Integer temp = idStatisticsCountList.get(i);
                 Id<Link> tempId = idStatisticsList.get(i);
-                idStatisticsList.set(i,idStatisticsList.get(minPosition));
-                idStatisticsList.set(minPosition,tempId);
+
+                idStatisticsCountList.set(i,min);
+                idStatisticsCountList.set(index,temp);
+
+                idStatisticsList.set(i,idStatisticsList.get(index));
+                idStatisticsList.set(index,tempId);
             }
         }
 
@@ -99,7 +102,7 @@ public class AlgorithmsUtils {
     /*
        1.计算travelTime的离散程度，离散程度越低优化效果越好
        2.故做出如下设计：
-       3.将每组travelTime简单相处，即travelTime/validation
+       3.将每组travelTime简单相除，即travelTime/validation
        4.相加结果，再除以有效验证次数
      */
     public static double travelTimeDeviation (List<RouteInfo> routeInfoList){
@@ -117,9 +120,6 @@ public class AlgorithmsUtils {
 
         return result;
     }
-
-
-
 
     /*
        计算距离的差值，用于判断network的路径是否变化
@@ -157,6 +157,7 @@ public class AlgorithmsUtils {
         double abs_NetworkValidationTravelTimeDifferenceSum =0.0;
         double scoreNetworkTravelTime;
         double validationTravelTime;
+        double networkTravelTime;
 
 
         List<Double> abs_NetworkValidationTravelTimeDifferenceList = new ArrayList<>();
@@ -164,8 +165,9 @@ public class AlgorithmsUtils {
         for (RouteInfo routeInfo : routeInfoList) {
             validationTravelTime=routeInfo.getValidationTravelTime();
             validationTravelTimeSum += validationTravelTime;
+            networkTravelTime = routeInfo.getNetworkTravelTime();
 
-            abs_NetworkValidationTravelTimeDifferenceList.add(Math.abs(routeInfo.getNetworkTravelTime() - validationTravelTime));
+            abs_NetworkValidationTravelTimeDifferenceList.add(Math.abs(networkTravelTime - validationTravelTime));
         }
 
         avg_validationTravelTime =validationTravelTimeSum/ routeInfoList.size();
@@ -180,9 +182,10 @@ public class AlgorithmsUtils {
 
     public static double distanceScoreCalculation(List<RouteInfo> routeInfoList){
         double validationDistanceSum=0.0;
-        double avg_validationDistance = 0;
+        double avg_validationDistance;
         double abs_NetworkValidationDistanceDifferenceSum =0.0;
         double scoreNetworkDistance;
+
 
         List<Double> abs_NetworkValidationDistanceDifferenceList = new ArrayList<>();
 
