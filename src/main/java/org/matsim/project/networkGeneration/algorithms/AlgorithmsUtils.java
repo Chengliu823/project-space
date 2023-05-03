@@ -8,6 +8,8 @@ import java.util.*;
 public class AlgorithmsUtils {
     private AlgorithmsUtils(){}
 
+
+
     public static int scoreSort(List<ScoreInfo> scoreList){
         int index =0;
         double score =scoreList.get(index).getTravelTimeScore();

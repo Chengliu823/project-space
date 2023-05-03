@@ -151,14 +151,16 @@ public class NetworkValidation implements MATSimAppCommand {
 
                 //这里插入判断，判断database中有没有这个信息
 
-                Tuple<Double, Double> validatedResult = null;
+                Tuple<Double, Double> validatedResult;
                 int databaseTripInfoListIndex = 0;
                 for (int i = 0; i < databaseTripInfoList.size(); i++) {
                     if (tripId.equals(databaseTripInfoList.get(i).getTripId())){
                         databaseFlag = true;
                         databaseTripInfoListIndex =i;
+                        break;
                     }
                 }
+
                 if (databaseFlag){
                     validationTravelTime =databaseTripInfoList.get(databaseTripInfoListIndex).getValidationTravelTime();
                     validationDistance =databaseTripInfoList.get(databaseTripInfoListIndex).getValidationDistance();
@@ -184,12 +186,13 @@ public class NetworkValidation implements MATSimAppCommand {
                 //tripInfo instances
                 TripInfo tripInfo = new TripInfo(tripId,fromX, fromY, toX,toY,route.travelTime,validationTravelTime,networkTravelDistance,validationDistance);
                 if (databaseFlag){
-                    continue;
+
                 }else {
                     database.Insert(tripInfo);
                 }
 
                 tripInfoList.add(tripInfo);
+
                 databaseFlag = false;
 
                 if (route.travelTime != 0 && validationTravelTime != 0 && networkTravelDistance != 0 && validationDistance != 0){
@@ -329,6 +332,7 @@ public class NetworkValidation implements MATSimAppCommand {
             System.out.println("improve times ="+i+ "max improve times ="+maximalImproveTimes);
         }
 
+
         int bestImproveGroup = AlgorithmsUtils.scoreSort(bestImproveScoreList)+1;
         int bestImproveIndex =bestImproveGroup-1;
         double bestImproveTravelTimeScore = bestImproveScoreList.get(bestImproveIndex).getTravelTimeScore();
@@ -336,7 +340,6 @@ public class NetworkValidation implements MATSimAppCommand {
         double bestImproveDistanceScore = bestImproveScoreList.get(bestImproveIndex).getDistanceScore();
         double bestImproveDistanceDeviation = bestImproveScoreList.get(bestImproveIndex).getDistanceDeviation();
 
-        System.out.println();
         System.out.println("Group "+bestImproveGroup+" is the best Group. " +"best improved Travel time score is:"+bestImproveTravelTimeScore +"best Improve TravelTime Deviation:"+bestImproveTravelTimeDeviation +"best Improve Distance Score:"+bestImproveDistanceScore +"best Improve Distance Deviation:"+bestImproveDistanceDeviation);
         System.out.println("first travel Time Score:"+firstTravelTimeScore+ "first distance Score: "+firstDistanceScore+"firstTravelTime Deviation:"+firstTravelTimeDeviation +"firstDistanceDeviation:"+firstDistanceDeviation);
 

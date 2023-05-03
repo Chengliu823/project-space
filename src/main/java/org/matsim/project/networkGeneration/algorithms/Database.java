@@ -16,11 +16,7 @@ public class Database {
     public static void main(String[] args) {
         Database database = new Database();
         database.createTripInfoTable();
-        List<TripInfo> tripInfoList = infoList();
-
-        for (int i = 0; i < tripInfoList.size(); i++) {
-            System.out.println(tripInfoList.get(i).getTripId());
-        }
+        //database.changeTripInfoTable();
     }
 
 
@@ -41,13 +37,15 @@ public class Database {
         String url = "jdbc:sqlite:E:\\TU_Berlin\\Masterarbeit\\project-space\\lib\\TripInfo.db";
 
         // SQL statement for creating a new table
-        String sqlCreate = "CREATE TABLE IF NOT EXISTS TripInfo (\n"
+        String sqlCreate = "CREATE TABLE IF NOT EXISTS HereTripInfo (\n"
                 + "	TripId String PRIMARY KEY,\n"
                 + "	FromX real ,\n"
                 + "	FromY real ,\n"
                 + "	ToX real,\n"
                 + "	ToY real,\n"
+                + "	NetworkTravelTime real,\n"
                 + "	ValidationTravelTime real,\n"
+                + "	NetworkDistance real,\n"
                 + "	ValidationDistance real\n"
                 + ");";
 
@@ -55,6 +53,17 @@ public class Database {
              Statement statement = connection.createStatement()) {
             // create a new table
             statement.execute(sqlCreate);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void changeTripInfoTable(){
+        String sqlChange="ALTER TABLE TripInfo CHANGE `TripId` `TripId` INT PRIMARY KEY";
+
+        try (Connection connection = this.connection();
+             Statement statement = connection.createStatement()) {
+            statement.execute(sqlChange);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -89,14 +98,15 @@ public class Database {
 
      */
 
-    public static List<TripInfo> infoList(){
+    public List<TripInfo> infoList(){
         List<TripInfo> tripInfoList = new ArrayList<>();
-        Connection connection = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
+        Connection connection;
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
         try {
             connection =DriverManager.getConnection("jdbc:sqlite:E:\\TU_Berlin\\Masterarbeit\\project-space\\lib\\TripInfo.db");
-            preparedStatement =connection.prepareStatement("SELECT * FROM TripInfo");
+            preparedStatement =connection.prepareStatement("SELECT * FROM GoogleTripInfo");
+            //preparedStatement =connection.prepareStatement("SELECT * FROM HERETripInfo");
             resultSet =preparedStatement.executeQuery();
             while (resultSet.next()){
                 String tripId =resultSet.getString(1);
@@ -104,9 +114,11 @@ public class Database {
                 double fromY = resultSet.getDouble(3);
                 double toX = resultSet.getDouble(4);
                 double toY = resultSet.getDouble(5);
-                double validationTravelTime = resultSet.getDouble(6);
-                double validationDistance = resultSet.getDouble(7);
-                TripInfo tripInfo = new TripInfo(tripId,fromX,fromY,toX,toY,0,validationTravelTime,0,validationDistance);
+                double networkTravelTime =resultSet.getDouble(6);
+                double validationTravelTime = resultSet.getDouble(7);
+                double networkDistance = resultSet.getDouble(8);
+                double validationDistance = resultSet.getDouble(9);
+                TripInfo tripInfo = new TripInfo(tripId,fromX,fromY,toX,toY,networkTravelTime,validationTravelTime,0,validationDistance);
                 tripInfoList.add(tripInfo);
             }
 
@@ -121,7 +133,8 @@ public class Database {
     public void Insert(TripInfo tripInfo){
         String url = "jdbc:sqlite:E:\\TU_Berlin\\Masterarbeit\\project-space\\lib\\TripInfo.db";
 
-        String sqlInsert ="INSERT INTO TripInfo(TripId,FromX,FromY,ToX,ToY,ValidationTravelTime,ValidationDistance)VALUES(?, ?, ?, ?, ?, ?, ?)";
+        String sqlInsert ="INSERT INTO GoogleTripInfo(TripId,FromX,FromY,ToX,ToY,NetworkTravelTime,ValidationTravelTime,NetworkDistance,ValidationDistance)VALUES(?, ?, ?, ?, ?, ?,?,?,?)";
+        //String sqlInsert ="INSERT INTO HERETripInfo(TripId,FromX,FromY,ToX,ToY,NetworkTravelTime,ValidationTravelTime,NetworkDistance,ValidationDistance)VALUES(?, ?, ?, ?, ?, ?,?,?,?)";
 
         try (Connection connection=this.connection();
              PreparedStatement preparedStatement =connection.prepareStatement(sqlInsert))
@@ -131,8 +144,10 @@ public class Database {
             preparedStatement.setDouble(3,tripInfo.getFromY());
             preparedStatement.setDouble(4,tripInfo.getToX());
             preparedStatement.setDouble(5,tripInfo.getToY());
-            preparedStatement.setDouble(6,tripInfo.getValidationTravelTime());
-            preparedStatement.setDouble(7,tripInfo.getValidationDistance());
+            preparedStatement.setDouble(6,tripInfo.getNetworkTravelTime());
+            preparedStatement.setDouble(7,tripInfo.getValidationTravelTime());
+            preparedStatement.setDouble(8,tripInfo.getNetworkDistance());
+            preparedStatement.setDouble(9,tripInfo.getValidationDistance());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
