@@ -5,9 +5,8 @@ import org.matsim.api.core.v01.network.Link;
 
 import java.util.*;
 
-public class AlgorithmsUtils {
+public class AlgorithmsUtils{
     private AlgorithmsUtils(){}
-
 
 
     public static int scoreSort(List<ScoreInfo> scoreList){
@@ -38,14 +37,14 @@ public class AlgorithmsUtils {
         return  bestFreeSpeed;
     }
 
-    public static List<Id<Link>> sort (List<AlgorithmsLink> algorithmsLinkList){
+    public static List<Id<Link>> sort (List<linkCollection> linkCollectionList){
         List<Id<Link>> idStatisticsList = new ArrayList<>();
         List<Integer> idStatisticsCountList = new ArrayList<>();
         HashMap<Id<Link>,Integer> idStatisticMap = new HashMap<>();
 
 
-        for (int i = 0; i < algorithmsLinkList.size(); i++) {
-            Id<Link> id = algorithmsLinkList.get(i).getAlgorithmsId();
+        for (int i = 0; i < linkCollectionList.size(); i++) {
+            Id<Link> id = linkCollectionList.get(i).getAlgorithmsId();
             Integer idCount = idStatisticMap.get(id);
             idStatisticMap.put(id,(idCount == null)? 1 : idCount++);
         }
@@ -87,14 +86,15 @@ public class AlgorithmsUtils {
         2.选出经过次数最多的link
      */
 
-    public static List<AlgorithmsLink> linkChoice (List<AlgorithmsLink> algorithmsLinkList, Map<Id<Link>, Double> idCollectionMap){
-        List<AlgorithmsLink> improveLinkList = new ArrayList<>();
-        List<Id<Link>>idStatisticsList = sort(algorithmsLinkList);
+    public static List<linkCollection> linkChoice (List<linkCollection> linkCollectionList, Map<Id<Link>, Double> idCollectionMap){
+        List<linkCollection> improveLinkList = new ArrayList<>();
+
+        List<Id<Link>>idStatisticsList = sort(linkCollectionList);
 
         for (int i = 0; i < idStatisticsList.size()*0.1; i++) {
             Id<Link> id = idStatisticsList.get(i);
-            AlgorithmsLink algorithmsLink = new AlgorithmsLink(id,idCollectionMap.get(id));
-            improveLinkList.add(algorithmsLink);
+            linkCollection linkCollection = new linkCollection(id,idCollectionMap.get(id));
+            improveLinkList.add(linkCollection);
         }
 
         return improveLinkList;
@@ -109,8 +109,10 @@ public class AlgorithmsUtils {
      */
     public static double travelTimeDeviation (List<RouteInfo> routeInfoList){
         List<Double> travelTimeQuotientList =new ArrayList<>();
+
         double travelTimeQuotientSum =0;
-        double result;
+        double travelTimeDeviation;
+
         for (int i = 0; i < routeInfoList.size(); i++) {
             travelTimeQuotientList.add(routeInfoList.get(i).getNetworkTravelTime()/ routeInfoList.get(i).getValidationTravelTime());
         }
@@ -118,9 +120,9 @@ public class AlgorithmsUtils {
         for (int i = 0; i < travelTimeQuotientList.size(); i++) {
             travelTimeQuotientSum+= travelTimeQuotientList.get(i);
         }
-        result =travelTimeQuotientSum/travelTimeQuotientList.size();
+        travelTimeDeviation =travelTimeQuotientSum/travelTimeQuotientList.size();
 
-        return result;
+        return travelTimeDeviation;
     }
 
     /*
@@ -165,22 +167,26 @@ public class AlgorithmsUtils {
         List<Double> abs_NetworkValidationTravelTimeDifferenceList = new ArrayList<>();
 
         for (RouteInfo routeInfo : routeInfoList) {
-            validationTravelTime=routeInfo.getValidationTravelTime();
-            validationTravelTimeSum += validationTravelTime;
             networkTravelTime = routeInfo.getNetworkTravelTime();
+            validationTravelTime=routeInfo.getValidationTravelTime();
 
+
+            validationTravelTimeSum += validationTravelTime;
             abs_NetworkValidationTravelTimeDifferenceList.add(Math.abs(networkTravelTime - validationTravelTime));
         }
 
         avg_validationTravelTime =validationTravelTimeSum/ routeInfoList.size();
 
-        for (Double aDouble : abs_NetworkValidationTravelTimeDifferenceList) {
-            abs_NetworkValidationTravelTimeDifferenceSum += aDouble;
+        for (Double abs_NetworkValidationTravelTimeDifference : abs_NetworkValidationTravelTimeDifferenceList) {
+            abs_NetworkValidationTravelTimeDifferenceSum += abs_NetworkValidationTravelTimeDifference;
         }
+
+        //scoreNetworkTravelTime =(avg_validationTravelTime- (abs_NetworkValidationTravelTimeDifferenceSum/abs_NetworkValidationTravelTimeDifferenceList.size()))/avg_validationTravelTime;
         scoreNetworkTravelTime = (abs_NetworkValidationTravelTimeDifferenceSum/abs_NetworkValidationTravelTimeDifferenceList.size())/avg_validationTravelTime;
 
         return scoreNetworkTravelTime;
     }
+
 
     public static double distanceScoreCalculation(List<RouteInfo> routeInfoList){
         double validationDistanceSum=0.0;
@@ -198,8 +204,8 @@ public class AlgorithmsUtils {
 
         avg_validationDistance =validationDistanceSum/ routeInfoList.size();
 
-        for (Double aDouble : abs_NetworkValidationDistanceDifferenceList) {
-            abs_NetworkValidationDistanceDifferenceSum += aDouble;
+        for (Double NetworkValidationDistanceDifference : abs_NetworkValidationDistanceDifferenceList) {
+            abs_NetworkValidationDistanceDifferenceSum += NetworkValidationDistanceDifference;
         }
         scoreNetworkDistance =(abs_NetworkValidationDistanceDifferenceSum/abs_NetworkValidationDistanceDifferenceList.size())/avg_validationDistance;
 

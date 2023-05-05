@@ -34,7 +34,6 @@ public class Database {
     }
 
     public void createTripInfoTable() {
-        String url = "jdbc:sqlite:E:\\TU_Berlin\\Masterarbeit\\project-space\\lib\\TripInfo.db";
 
         // SQL statement for creating a new table
         String sqlCreate = "CREATE TABLE IF NOT EXISTS HereTripInfo (\n"
@@ -98,14 +97,24 @@ public class Database {
 
      */
 
-    public List<TripInfo> infoList(){
+    public List<TripInfo> infoList(String API){
+        //Database database =new Database();
+        //Connection connection =database.connection();
+
         List<TripInfo> tripInfoList = new ArrayList<>();
         Connection connection;
-        PreparedStatement preparedStatement;
+        PreparedStatement preparedStatement = null;
         ResultSet resultSet;
         try {
             connection =DriverManager.getConnection("jdbc:sqlite:E:\\TU_Berlin\\Masterarbeit\\project-space\\lib\\TripInfo.db");
-            preparedStatement =connection.prepareStatement("SELECT * FROM GoogleTripInfo");
+            if (API.equals("GOOGLE_MAP")){
+                preparedStatement =connection.prepareStatement("SELECT * FROM GoogleTripInfo");
+            } else if (API.equals("HERE")){
+                preparedStatement =connection.prepareStatement("SELECT * FROM HereTripInfo");
+            } else {
+                System.out.println("Please enter a correct API");
+            }
+
             //preparedStatement =connection.prepareStatement("SELECT * FROM HERETripInfo");
             resultSet =preparedStatement.executeQuery();
             while (resultSet.next()){
@@ -153,5 +162,6 @@ public class Database {
             System.out.println(e.getMessage());
         }
     }
+
 
 }
