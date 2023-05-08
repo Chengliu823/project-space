@@ -37,7 +37,7 @@ public class AlgorithmsUtils{
         return  bestFreeSpeed;
     }
 
-    public static List<Id<Link>> sort (List<linkCollection> linkCollectionList){
+    public static List<Id<Link>> sort (List<LinkCollection> linkCollectionList){
         List<Id<Link>> idStatisticsList = new ArrayList<>();
         List<Integer> idStatisticsCountList = new ArrayList<>();
         HashMap<Id<Link>,Integer> idStatisticMap = new HashMap<>();
@@ -86,14 +86,14 @@ public class AlgorithmsUtils{
         2.选出经过次数最多的link
      */
 
-    public static List<linkCollection> linkChoice (List<linkCollection> linkCollectionList, Map<Id<Link>, Double> idCollectionMap){
-        List<linkCollection> improveLinkList = new ArrayList<>();
+    public static List<LinkCollection> linkChoice (List<LinkCollection> linkCollectionList, Map<Id<Link>, Double> idCollectionMap){
+        List<LinkCollection> improveLinkList = new ArrayList<>();
 
         List<Id<Link>>idStatisticsList = sort(linkCollectionList);
 
         for (int i = 0; i < idStatisticsList.size()*0.1; i++) {
             Id<Link> id = idStatisticsList.get(i);
-            linkCollection linkCollection = new linkCollection(id,idCollectionMap.get(id));
+            LinkCollection linkCollection = new LinkCollection(id,idCollectionMap.get(id));
             improveLinkList.add(linkCollection);
         }
 

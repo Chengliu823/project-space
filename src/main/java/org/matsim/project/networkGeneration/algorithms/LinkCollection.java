@@ -3,14 +3,14 @@ package org.matsim.project.networkGeneration.algorithms;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.network.Link;
 
-public class linkCollection {
+public class LinkCollection {
     private Id<Link> algorithmsId;
     private double algorithmsFreeSpeed;
 
-    public linkCollection() {
+    public LinkCollection() {
     }
 
-    public linkCollection(Id<Link> algorithmsId, double algorithmsFreeSpeed) {
+    public LinkCollection(Id<Link> algorithmsId, double algorithmsFreeSpeed) {
         this.algorithmsId = algorithmsId;
         this.algorithmsFreeSpeed = algorithmsFreeSpeed;
     }
