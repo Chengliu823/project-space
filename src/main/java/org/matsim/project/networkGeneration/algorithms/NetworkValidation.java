@@ -195,7 +195,7 @@ public class NetworkValidation implements MATSimAppCommand {
                 if (databaseFlag){
 
                 }else {
-                    database.Insert(tripInfo);
+                    database.Insert(tripInfo,api.toString());
                 }
 
                 tripInfoList.add(tripInfo);

@@ -139,11 +139,18 @@ public class Database {
 
 
 
-    public void Insert(TripInfo tripInfo){
+    public void Insert(TripInfo tripInfo,String API){
         String url = "jdbc:sqlite:E:\\TU_Berlin\\Masterarbeit\\project-space\\lib\\TripInfo.db";
 
-        String sqlInsert ="INSERT INTO GoogleTripInfo(TripId,FromX,FromY,ToX,ToY,NetworkTravelTime,ValidationTravelTime,NetworkDistance,ValidationDistance)VALUES(?, ?, ?, ?, ?, ?,?,?,?)";
-        //String sqlInsert ="INSERT INTO HERETripInfo(TripId,FromX,FromY,ToX,ToY,NetworkTravelTime,ValidationTravelTime,NetworkDistance,ValidationDistance)VALUES(?, ?, ?, ?, ?, ?,?,?,?)";
+        String sqlInsert =null;
+
+        if (API.equals("GOOGLE_MAP")){
+            sqlInsert ="INSERT INTO GoogleTripInfo(TripId,FromX,FromY,ToX,ToY,NetworkTravelTime,ValidationTravelTime,NetworkDistance,ValidationDistance)VALUES(?, ?, ?, ?, ?, ?,?,?,?)";
+        } else if (API.equals("HERE")){
+            sqlInsert ="INSERT INTO HERETripInfo(TripId,FromX,FromY,ToX,ToY,NetworkTravelTime,ValidationTravelTime,NetworkDistance,ValidationDistance)VALUES(?, ?, ?, ?, ?, ?,?,?,?)";
+        } else {
+            System.out.println("Please enter a correct API");
+        }
 
         try (Connection connection=this.connection();
              PreparedStatement preparedStatement =connection.prepareStatement(sqlInsert))

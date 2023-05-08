@@ -59,4 +59,5 @@ public class TripInfo extends RouteInfo {
     public void setToY(double toY) {
         this.toY = toY;
     }
+
 }
