@@ -18,6 +18,12 @@ public class AlgorithmsUtils{
             if (score<= tempScore){
                 index =i;
             }
+/*
+            if (score<= tempScore){
+                index =i;
+            }
+
+ */
         }
 
         return index;
@@ -155,7 +161,27 @@ public class AlgorithmsUtils{
  */
 
     //这一步可以用抽象解决，之后改
+
     public static double travelTimeScoreCalculation(List<RouteInfo> routeInfoList){
+        double scoreNetworkTravelTime;
+        double validationTravelTime;
+        double networkTravelTime;
+        double travelTimeScoreSum = 0;
+
+        for (RouteInfo routeInfo : routeInfoList){
+            networkTravelTime = routeInfo.getNetworkTravelTime();
+            validationTravelTime = routeInfo.getValidationTravelTime();
+            travelTimeScoreSum +=Math.pow((Math.abs(networkTravelTime-validationTravelTime)/validationTravelTime),2);
+        }
+        scoreNetworkTravelTime =(travelTimeScoreSum/ routeInfoList.size());
+
+        return scoreNetworkTravelTime;
+    }
+
+
+
+/*
+        public static double travelTimeScoreCalculation(List<RouteInfo> routeInfoList){
         double validationTravelTimeSum=0.0;
         double avg_validationTravelTime;
         double abs_NetworkValidationTravelTimeDifferenceSum =0.0;
@@ -188,6 +214,9 @@ public class AlgorithmsUtils{
     }
 
 
+ */
+
+
     public static double distanceScoreCalculation(List<RouteInfo> routeInfoList){
         double validationDistanceSum=0.0;
         double avg_validationDistance;
@@ -212,4 +241,5 @@ public class AlgorithmsUtils{
 
         return scoreNetworkDistance;
     }
+
 }

@@ -244,18 +244,18 @@ public class SpeedData {
                                 break;
 
                         case 8:
-                                setFreeSpeed_Motorway(100/3.6);
-                                setFreeSpeed_MotorwayLink(82/3.6);
-                                setFreeSpeed_Trunk(82/3.6);
-                                setFreeSpeed_TrunkLink(82/3.6);
-                                setFreeSpeed_Primary(65/3.6);
-                                setFreeSpeed_PrimaryLink(65/3.6);
-                                setFreeSpeed_Secondary(50/3.6);
-                                setFreeSpeed_SecondaryLink(50/3.6);
+                                setFreeSpeed_Motorway(63/3.6);
+                                setFreeSpeed_MotorwayLink(63/3.6);
+                                setFreeSpeed_Trunk(58/3.6);
+                                setFreeSpeed_TrunkLink(58/3.6);
+                                setFreeSpeed_Primary(15/3.6);
+                                setFreeSpeed_PrimaryLink(15/3.6);
+                                setFreeSpeed_Secondary(45/3.6);
+                                setFreeSpeed_SecondaryLink(45/3.6);
                                 setFreeSpeed_Tertiary(50/3.6);
                                 setFreeSpeed_TertiaryLink(50/3.6);
-                                setFreeSpeed_Residential(25/3.6);
-                                setFreeSpeed_Unclassified(25/3.6);
+                                setFreeSpeed_Residential(35/3.6);
+                                setFreeSpeed_Unclassified(5/3.6);
                                 break;
                 }
         }

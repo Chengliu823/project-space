@@ -37,7 +37,7 @@ public class Database {
 
         // SQL statement for creating a new table
         String sqlCreate = "CREATE TABLE IF NOT EXISTS HereTripInfo (\n"
-                + "	TripId String PRIMARY KEY,\n"
+                + "	TripId String,\n"
                 + "	FromX real ,\n"
                 + "	FromY real ,\n"
                 + "	ToX real,\n"
