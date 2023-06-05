@@ -12,15 +12,6 @@ import java.util.List;
 
 public class Database {
 
-
-    public static void main(String[] args) {
-        Database database = new Database();
-        database.createTripInfoTable();
-        //database.changeTripInfoTable();
-    }
-
-
-
     public Connection connection(){
         String url = "jdbc:sqlite:E:\\TU_Berlin\\Masterarbeit\\project-space\\lib\\TripInfo.db";
 

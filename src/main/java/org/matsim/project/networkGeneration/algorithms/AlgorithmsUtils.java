@@ -8,26 +8,6 @@ import java.util.*;
 public class AlgorithmsUtils{
     private AlgorithmsUtils(){}
 
-
-    public static int scoreSort(List<ScoreInfo> scoreList){
-        int index =0;
-        double score =scoreList.get(index).getTravelTimeScore();
-
-        for (int i = 0; i < scoreList.size(); i++) {
-            double tempScore = scoreList.get(i).getTravelTimeScore();
-            if (score<= tempScore){
-                index =i;
-            }
-/*
-            if (score<= tempScore){
-                index =i;
-            }
-
- */
-        }
-
-        return index;
-    }
     public static double listSort (List<ImproveScore> improveScoreList){
         double bestFreeSpeed;
         int index =0;
@@ -88,8 +68,7 @@ public class AlgorithmsUtils{
     }
 
         /*
-        1.得出评分后需要筛选出需要优化的link，获取link需要首先在person的for loop中完成
-        2.选出经过次数最多的link
+        1.Select the desired link
      */
 
     public static List<LinkCollection> linkChoice (List<LinkCollection> linkCollectionList, Map<Id<Link>, Double> idCollectionMap){
@@ -97,7 +76,7 @@ public class AlgorithmsUtils{
 
         List<Id<Link>>idStatisticsList = sort(linkCollectionList);
 
-        for (int i = 0; i < idStatisticsList.size()*0.1; i++) {
+        for (int i = 0; i < idStatisticsList.size()*0.2; i++) {
             Id<Link> id = idStatisticsList.get(i);
             LinkCollection linkCollection = new LinkCollection(id,idCollectionMap.get(id));
             improveLinkList.add(linkCollection);
@@ -108,19 +87,18 @@ public class AlgorithmsUtils{
 
 
     /*
-       1.计算travelTime的离散程度，离散程度越低优化效果越好
-       2.故做出如下设计：
-       3.将每组travelTime简单相除，即travelTime/validation
-       4.相加结果，再除以有效验证次数
+       Calculate the degree of dispersion of travelTime, the lower the degree of dispersion, the better the optimization effect
      */
     public static double travelTimeDeviation (List<RouteInfo> routeInfoList){
         List<Double> travelTimeQuotientList =new ArrayList<>();
 
         double travelTimeQuotientSum =0;
         double travelTimeDeviation;
+        double travelTimeQuotient;
 
         for (int i = 0; i < routeInfoList.size(); i++) {
-            travelTimeQuotientList.add(routeInfoList.get(i).getNetworkTravelTime()/ routeInfoList.get(i).getValidationTravelTime());
+            travelTimeQuotient=Math.abs((routeInfoList.get(i).getNetworkTravelTime()/ routeInfoList.get(i).getValidationTravelTime())-1);
+            travelTimeQuotientList.add(travelTimeQuotient);
         }
 
         for (int i = 0; i < travelTimeQuotientList.size(); i++) {
@@ -132,10 +110,7 @@ public class AlgorithmsUtils{
     }
 
     /*
-       计算距离的差值，用于判断network的路径是否变化
-       1.如果行走路径一致则结果相同
-       2.故设计，将每一组distance进行简单的相除，即network/validation
-       3.相加结果，再将结果除以有效验证次数
+       Calculate the degree of dispersion of distance, the lower the degree of dispersion, the better the optimization effect
      */
 
     public static double distanceDeviation (List<RouteInfo> routeInfoList){
@@ -143,7 +118,7 @@ public class AlgorithmsUtils{
         double distanceQuotientSum =0;
         double result;
         for (int i = 0; i < routeInfoList.size(); i++) {
-            distanceQuotientList.add(routeInfoList.get(i).getNetworkDistance()/ routeInfoList.get(i).getValidationDistance());
+            distanceQuotientList.add(Math.abs((routeInfoList.get(i).getNetworkDistance()/ routeInfoList.get(i).getValidationDistance())-1));
         }
         for (int i = 0; i < distanceQuotientList.size(); i++) {
             distanceQuotientSum += distanceQuotientList.get(i);
@@ -160,9 +135,38 @@ public class AlgorithmsUtils{
        3.Network与validation之间差值的绝对值的和的平均数除以validation值的平均数
  */
 
-    //这一步可以用抽象解决，之后改
 
-    public static double travelTimeScoreCalculation(List<RouteInfo> routeInfoList){
+    //calculate the score of the travel time,This score will be used to compare the effect of the network before and after optimization. The lower the score, the better.
+    //Design three different object functions for easy comparison
+
+/*
+    public static double travelTimeScoreCalculation(List<RouteInfo> routeInfoList){// Algorithms3
+        double scoreNetworkTravelTime;
+        double validationTravelTime;
+        double networkTravelTime;
+        double travelTimeScoreSum = 0;
+
+        for (RouteInfo routeInfo : routeInfoList){
+            networkTravelTime = routeInfo.getNetworkTravelTime();
+            validationTravelTime = routeInfo.getValidationTravelTime();
+            travelTimeScoreSum +=Math.pow((Math.abs(networkTravelTime-validationTravelTime)/validationTravelTime),2)+Math.abs((networkTravelTime-validationTravelTime)/validationTravelTime);
+        }
+
+        scoreNetworkTravelTime =(travelTimeScoreSum/ routeInfoList.size());
+
+        return scoreNetworkTravelTime;
+    }
+
+ */
+
+
+
+
+
+
+
+/*
+       public static double travelTimeScoreCalculation(List<RouteInfo> routeInfoList){// Algorithms2
         double scoreNetworkTravelTime;
         double validationTravelTime;
         double networkTravelTime;
@@ -179,16 +183,22 @@ public class AlgorithmsUtils{
     }
 
 
+ */
 
-/*
-        public static double travelTimeScoreCalculation(List<RouteInfo> routeInfoList){
+
+
+
+
+
+
+
+        public static double travelTimeScoreCalculation(List<RouteInfo> routeInfoList){// Algorithms1
         double validationTravelTimeSum=0.0;
         double avg_validationTravelTime;
         double abs_NetworkValidationTravelTimeDifferenceSum =0.0;
         double scoreNetworkTravelTime;
         double validationTravelTime;
         double networkTravelTime;
-
 
         List<Double> abs_NetworkValidationTravelTimeDifferenceList = new ArrayList<>();
 
@@ -214,7 +224,13 @@ public class AlgorithmsUtils{
     }
 
 
- */
+
+
+
+
+
+
+
 
 
     public static double distanceScoreCalculation(List<RouteInfo> routeInfoList){

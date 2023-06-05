@@ -138,8 +138,8 @@ public class SpeedData {
         public void choiceSpeedGroup(int speedGroup){
                 switch (speedGroup){
                         case 1:
-                                setFreeSpeed_Motorway(108/3.6);
-                                setFreeSpeed_MotorwayLink(90/3.6);
+                                setFreeSpeed_Motorway(117/3.6);
+                                setFreeSpeed_MotorwayLink(117/3.6);
                                 setFreeSpeed_Trunk(90/3.6);
                                 setFreeSpeed_TrunkLink(90/3.6);
                                 setFreeSpeed_Primary(72/3.6);
@@ -153,8 +153,8 @@ public class SpeedData {
                                 break;
 
                         case 2:
-                                setFreeSpeed_Motorway(114/3.6);
-                                setFreeSpeed_MotorwayLink(95/3.6);
+                                setFreeSpeed_Motorway(123.5/3.6);
+                                setFreeSpeed_MotorwayLink(123.5/3.6);
                                 setFreeSpeed_Trunk(95/3.6);
                                 setFreeSpeed_TrunkLink(95/3.6);
                                 setFreeSpeed_Primary(76/3.6);
@@ -169,8 +169,8 @@ public class SpeedData {
 
                         case 3:
                         default:
-                                setFreeSpeed_Motorway(120/3.6);
-                                setFreeSpeed_MotorwayLink(100/3.6);
+                                setFreeSpeed_Motorway(130/3.6);
+                                setFreeSpeed_MotorwayLink(130/3.6);
                                 setFreeSpeed_Trunk(100/3.6);
                                 setFreeSpeed_TrunkLink(100/3.6);
                                 setFreeSpeed_Primary(80/3.6);
@@ -184,8 +184,8 @@ public class SpeedData {
                                 break;
 
                         case 4:
-                                setFreeSpeed_Motorway(126/3.6);
-                                setFreeSpeed_MotorwayLink(105/3.6);
+                                setFreeSpeed_Motorway(136.5/3.6);
+                                setFreeSpeed_MotorwayLink(136.5/3.6);
                                 setFreeSpeed_Trunk(105/3.6);
                                 setFreeSpeed_TrunkLink(105/3.6);
                                 setFreeSpeed_Primary(84/3.6);
@@ -199,8 +199,8 @@ public class SpeedData {
                                 break;
 
                         case 5:
-                                setFreeSpeed_Motorway(132/3.6);
-                                setFreeSpeed_MotorwayLink(110/3.6);
+                                setFreeSpeed_Motorway(143/3.6);
+                                setFreeSpeed_MotorwayLink(143/3.6);
                                 setFreeSpeed_Trunk(110/3.6);
                                 setFreeSpeed_TrunkLink(110/3.6);
                                 setFreeSpeed_Primary(88/3.6);
@@ -214,18 +214,18 @@ public class SpeedData {
                                 break;
 
                         case 6:
-                                setFreeSpeed_Motorway(125/3.6);
-                                setFreeSpeed_MotorwayLink(104/3.6);
-                                setFreeSpeed_Trunk(104/3.6);
-                                setFreeSpeed_TrunkLink(104/3.6);
-                                setFreeSpeed_Primary(80/3.6);
-                                setFreeSpeed_PrimaryLink(80/3.6);
-                                setFreeSpeed_Secondary(60/3.6);
-                                setFreeSpeed_SecondaryLink(60/3.6);
-                                setFreeSpeed_Tertiary(60/3.6);
-                                setFreeSpeed_TertiaryLink(60/3.6);
-                                setFreeSpeed_Residential(30/3.6);
-                                setFreeSpeed_Unclassified(30/3.6);
+                                setFreeSpeed_Motorway(90/3.6);
+                                setFreeSpeed_MotorwayLink(90/3.6);
+                                setFreeSpeed_Trunk(50/3.6);
+                                setFreeSpeed_TrunkLink(50/3.6);
+                                setFreeSpeed_Primary(40/3.6);
+                                setFreeSpeed_PrimaryLink(40/3.6);
+                                setFreeSpeed_Secondary(55/3.6);
+                                setFreeSpeed_SecondaryLink(55/3.6);
+                                setFreeSpeed_Tertiary(55/3.6);
+                                setFreeSpeed_TertiaryLink(55/3.6);
+                                setFreeSpeed_Residential(35/3.6);
+                                setFreeSpeed_Unclassified(50/3.6);
                                 break;
 
                         case 7:
@@ -248,13 +248,13 @@ public class SpeedData {
                                 setFreeSpeed_MotorwayLink(63/3.6);
                                 setFreeSpeed_Trunk(58/3.6);
                                 setFreeSpeed_TrunkLink(58/3.6);
-                                setFreeSpeed_Primary(15/3.6);
-                                setFreeSpeed_PrimaryLink(15/3.6);
-                                setFreeSpeed_Secondary(45/3.6);
-                                setFreeSpeed_SecondaryLink(45/3.6);
+                                setFreeSpeed_Primary(10/3.6);
+                                setFreeSpeed_PrimaryLink(10/3.6);
+                                setFreeSpeed_Secondary(40/3.6);
+                                setFreeSpeed_SecondaryLink(40/3.6);
                                 setFreeSpeed_Tertiary(50/3.6);
                                 setFreeSpeed_TertiaryLink(50/3.6);
-                                setFreeSpeed_Residential(35/3.6);
+                                setFreeSpeed_Residential(50/3.6);
                                 setFreeSpeed_Unclassified(5/3.6);
                                 break;
                 }

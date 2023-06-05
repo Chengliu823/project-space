@@ -76,14 +76,23 @@ public class NetworkValidation implements MATSimAppCommand {
     //Definition Value
     List<RouteInfo> routeInfoList = new ArrayList<>();
     List<LinkCollection> linkCollectionList = new ArrayList<>();
-    List<LinkCollection> improveLinkList;
+    List<LinkCollection> improveLinkList = new ArrayList<>();
+    List<LinkCollection> normalLinkList = new ArrayList<>();
+
+    List<LinkCollection> importantLinkList = new ArrayList<>();
+
     List<TripInfo> tripInfoList = new ArrayList<>();
 
     Map<Id<Link>, Double> idCollectionMap = new HashMap<>();
 
     int validated = 0;
     int validationZeroCount=0;
-
+    double firstTravelTimeScore;
+    double firstDistanceScore;
+    double firstTravelTimeDeviation;
+    double firstDistanceDeviation;
+    double travelTimeDeviation;
+    boolean tsvWriterFlag = false;
     public static void main(String[] args) {
         new NetworkValidation().execute(args);
     }
@@ -105,23 +114,46 @@ public class NetworkValidation implements MATSimAppCommand {
         CSVPrinter tsvWriter = new CSVPrinter(new FileWriter(outputPath + "/network-validation-" + api.toString() + ".tsv"), CSVFormat.TDF);
         validator = getApiInformation(ct);
 
-        firstValidation(validator,mainModeIdentifier,population,network,router,tsvWriter,databaseTripInfoList,database);
 
-        double firstTravelTimeScore= AlgorithmsUtils.travelTimeScoreCalculation(routeInfoList);
-        double firstDistanceScore = AlgorithmsUtils.distanceScoreCalculation(routeInfoList);
-        double firstTravelTimeDeviation = AlgorithmsUtils.travelTimeDeviation(routeInfoList);
-        double firstDistanceDeviation = AlgorithmsUtils.distanceDeviation(routeInfoList);
+       //improve(database, databaseTripInfoList, validator, mainModeIdentifier, population, network, travelTime, router, tsvWriter);
 
+        firstValidation(validator, mainModeIdentifier, population, network, router, tsvWriter, databaseTripInfoList, database);
+        firstTravelTimeScore= AlgorithmsUtils.travelTimeScoreCalculation(routeInfoList);
+        firstDistanceScore = AlgorithmsUtils.distanceScoreCalculation(routeInfoList);
+        firstTravelTimeDeviation = AlgorithmsUtils.travelTimeDeviation(routeInfoList);
+        firstDistanceDeviation = AlgorithmsUtils.distanceDeviation(routeInfoList);
+        System.out.println("first travel Time Score:"+firstTravelTimeScore+ "first distance Score: "+firstDistanceScore+"firstTravelTime Deviation:"+firstTravelTimeDeviation +"firstDistanceDeviation:"+firstDistanceDeviation);
 
-        improveLinkList = AlgorithmsUtils.linkChoice(linkCollectionList,idCollectionMap);
+        identifyImproveLink();
 
-        secondValidation(network,population,mainModeIdentifier,tsvWriter,firstTravelTimeScore,firstDistanceScore,firstTravelTimeDeviation,firstDistanceDeviation,travelTime);
-
-        //System.out.println("first travel Time Score:"+firstTravelTimeScore+ "first distance Score: "+firstDistanceScore+"firstTravelTime Deviation:"+firstTravelTimeDeviation +"firstDistanceDeviation:"+firstDistanceDeviation);
+        improveValidation(network, population, mainModeIdentifier, tsvWriter,firstTravelTimeScore,firstDistanceScore,firstTravelTimeDeviation,firstDistanceDeviation, travelTime);
 
         tsvWriter.close();
         new NetworkWriter(network).write(improveOutput.toString());
+
         return 0;
+    }
+
+    private void improve(Database database, List<TripInfo> databaseTripInfoList, TravelTimeDistanceValidator validator, MainModeIdentifier mainModeIdentifier, Population population, Network network, TravelTime travelTime, LeastCostPathCalculator router, CSVPrinter tsvWriter) throws IOException, InterruptedException {
+        do {
+            firstValidation(validator, mainModeIdentifier, population, network, router, tsvWriter, databaseTripInfoList, database);
+
+            firstTravelTimeScore = AlgorithmsUtils.travelTimeScoreCalculation(routeInfoList);
+            firstDistanceScore = AlgorithmsUtils.distanceScoreCalculation(routeInfoList);
+            firstTravelTimeDeviation = AlgorithmsUtils.travelTimeDeviation(routeInfoList);
+            firstDistanceDeviation = AlgorithmsUtils.distanceDeviation(routeInfoList);
+            System.out.println("first travel Time Score:" + firstTravelTimeScore + "first distance Score: " + firstDistanceScore + "firstTravelTime Deviation:" + firstTravelTimeDeviation + "firstDistanceDeviation:" + firstDistanceDeviation);
+
+            identifyImproveLink();
+
+            improveValidation(network, population, mainModeIdentifier, tsvWriter, firstTravelTimeScore, firstDistanceScore, firstTravelTimeDeviation, firstDistanceDeviation, travelTime);
+
+        } while (!(travelTimeDeviation * 1.1 <= firstTravelTimeDeviation));
+    }
+
+    private void identifyImproveLink() {
+        improveLinkList = AlgorithmsUtils.linkChoice(linkCollectionList,idCollectionMap);
+        improveLinkList.addAll(importantLinkList);
     }
 
 
@@ -177,7 +209,6 @@ public class NetworkValidation implements MATSimAppCommand {
 
                 double departureTime = trip.getOriginActivity().getEndTime().orElseThrow(RuntimeException::new);
 
-                //这里插入判断，判断database中有没有这个信息
 
                 Tuple<Double, Double> validatedResult;
 
@@ -192,6 +223,7 @@ public class NetworkValidation implements MATSimAppCommand {
                     }
                 }
 
+                //Determine whether the element exists in the database
                 if (databaseFlag){
                     validationTravelTime =databaseTripInfoList.get(databaseTripInfoListIndex).getValidationTravelTime();
                     validationDistance =databaseTripInfoList.get(databaseTripInfoListIndex).getValidationDistance();
@@ -231,9 +263,8 @@ public class NetworkValidation implements MATSimAppCommand {
                 if (networkTravelTime != 0 && validationTravelTime != 0 && networkTravelDistance != 0 && validationDistance != 0){
                     RouteInfo routeInfo = new RouteInfo(networkTravelTime,networkTravelDistance,validationTravelTime, validationDistance);
                     routeInfoList.add(routeInfo);
-
-                    linkCollection(route);
-
+                    //linkCollection(route);
+                    linkCollection(route,networkTravelTime,validationTravelTime);
                 }else {
                     validationZeroCount++;
                 }
@@ -252,19 +283,29 @@ public class NetworkValidation implements MATSimAppCommand {
         System.out.println("valid validation times is: "+invalidValidation);
     }
 
-    private void linkCollection(LeastCostPathCalculator.Path route) {
+private void linkCollection(LeastCostPathCalculator.Path route, double networkTravelTime, double validationTravelTime) {
         for (Link link: route.links){
             LinkCollection linkCollection = new LinkCollection(link.getId(),link.getFreespeed());
-            linkCollectionList.add(linkCollection);
-            idCollectionMap.put(link.getId(),link.getFreespeed());
+            if (Math.abs((networkTravelTime/validationTravelTime)-1)<=0.5 && Math.abs((networkTravelTime/validationTravelTime)-1)>=0.05){
+                linkCollectionList.add(linkCollection);
+                idCollectionMap.put(link.getId(),link.getFreespeed());
+            }else if (Math.abs((networkTravelTime/validationTravelTime)-1)>0.5){
+                importantLinkList.add(linkCollection);
+            }else if (Math.abs((networkTravelTime/validationTravelTime)-1)<0.05){
+                normalLinkList.add(linkCollection);
+            }
         }
     }
 
 
-    private void secondValidation(Network network, Population population, MainModeIdentifier mainModeIdentifier, CSVPrinter tsvWriter,double firstTravelTimeScore, double firstDistanceScore, double firstTravelTimeDeviation,double firstDistanceDeviation,TravelTime travelTime) throws IOException {
+    private void improveValidation(Network network, Population population, MainModeIdentifier mainModeIdentifier, CSVPrinter tsvWriter, double firstTravelTimeScore, double firstDistanceScore, double firstTravelTimeDeviation, double firstDistanceDeviation, TravelTime travelTime) throws IOException {
 
-        List<ScoreInfo> bestImproveScoreList = new ArrayList<>();
         double maximalImproveTimes =improveLinkList.size()-1;
+
+        double bestFreeSpeed;
+        int minFreeSpeedRate=20;
+        int maxFreeSpeedRate=180;
+        int freeSpeedLevel=5;
 
         for (int i = 0; i < improveLinkList.size(); i++) {
             Id<Link> improveLinkId =improveLinkList.get(i).getAlgorithmsId();
@@ -274,32 +315,47 @@ public class NetworkValidation implements MATSimAppCommand {
 
             List<ImproveScore> improveScoreList = new ArrayList<>();
 
-            linkReplace(network, population, mainModeIdentifier, tsvWriter, firstTravelTimeScore, firstDistanceScore, firstTravelTimeDeviation, firstDistanceDeviation, travelTime, bestImproveScoreList, maximalImproveTimes, i, improveLink, linkFreeSpeed, improveScoreList);
 
-            double bestFreeSpeed = AlgorithmsUtils.listSort(improveScoreList);
+            bestFreeSpeed =  bestFreeSpeed(network, population, mainModeIdentifier,tsvWriter, firstTravelTimeScore, firstDistanceScore, firstTravelTimeDeviation, firstDistanceDeviation, travelTime, improveLink, linkFreeSpeed, improveScoreList, minFreeSpeedRate, maxFreeSpeedRate ,freeSpeedLevel);
+            improveLink.setFreespeed(bestFreeSpeed);
+
+
+            bestFreeSpeed = bestFreeSpeed(network, population, mainModeIdentifier,tsvWriter, firstTravelTimeScore, firstDistanceScore, firstTravelTimeDeviation, firstDistanceDeviation, travelTime, improveLink, linkFreeSpeed, improveScoreList, 90, 110 ,1);
+            improveLink.setFreespeed(bestFreeSpeed);
+
+            //Determine whether to output data
+            if (i==improveLinkList.size()-1){
+                tsvWriterFlag = true;
+            }
+
+            bestFreeSpeed = bestFreeSpeed(network, population, mainModeIdentifier,tsvWriter, firstTravelTimeScore, firstDistanceScore, firstTravelTimeDeviation, firstDistanceDeviation, travelTime, improveLink, linkFreeSpeed, improveScoreList, 100, 101 ,1);
             improveLink.setFreespeed(bestFreeSpeed);
 
             System.out.println("improve times ="+i+ " max improve times ="+maximalImproveTimes);
         }
 
-        int bestImproveIndex =AlgorithmsUtils.scoreSort(bestImproveScoreList);
-        int bestGroup =bestImproveIndex+1;
-        double bestImproveTravelTimeScore = bestImproveScoreList.get(bestImproveIndex).getTravelTimeScore();
-        double bestImproveTravelTimeDeviation = bestImproveScoreList.get(bestImproveIndex).getTravelTimeDeviation();
-        double bestImproveDistanceScore = bestImproveScoreList.get(bestImproveIndex).getDistanceScore();
-        double bestImproveDistanceDeviation = bestImproveScoreList.get(bestImproveIndex).getDistanceDeviation();
-
-        System.out.println("best Group is:"+bestGroup+"best improved Travel time score is:"+bestImproveTravelTimeScore +"best Improve TravelTime Deviation:"+bestImproveTravelTimeDeviation +"best Improve Distance Score:"+bestImproveDistanceScore +"best Improve Distance Deviation:"+bestImproveDistanceDeviation);
         System.out.println("first travel Time Score:"+firstTravelTimeScore+ "first distance Score: "+firstDistanceScore+"firstTravelTime Deviation:"+firstTravelTimeDeviation +"firstDistanceDeviation:"+firstDistanceDeviation);
 
     }
 
-    private void linkReplace(Network network, Population population, MainModeIdentifier mainModeIdentifier, CSVPrinter tsvWriter, double firstTravelTimeScore, double firstDistanceScore, double firstTravelTimeDeviation, double firstDistanceDeviation, TravelTime travelTime, List<ScoreInfo> bestImproveScoreList, double maximalImproveTimes, int i, Link improveLink, double linkFreeSpeed, List<ImproveScore> improveScoreList) throws IOException {
 
-        for (int freeSpeedRate=80; freeSpeedRate<=120; freeSpeedRate+=1){
+    //calculate the best free speed
+    public double bestFreeSpeed(Network network, Population population, MainModeIdentifier mainModeIdentifier, CSVPrinter tsvWriter, double firstTravelTimeScore, double firstDistanceScore, double firstTravelTimeDeviation, double firstDistanceDeviation, TravelTime travelTime, Link improveLink, double linkFreeSpeed, List<ImproveScore> improveScoreList, int minFreeSpeedRate, int maxFreeSpeedRate, int freeSpeedLevel) throws IOException {
+        double bestFreeSpeed;
+        linkReplace(network, population, mainModeIdentifier,tsvWriter, firstTravelTimeScore, firstDistanceScore, firstTravelTimeDeviation, firstDistanceDeviation, travelTime, improveLink, linkFreeSpeed, improveScoreList, minFreeSpeedRate, maxFreeSpeedRate ,freeSpeedLevel);
+
+        bestFreeSpeed = AlgorithmsUtils.listSort(improveScoreList);
+        improveLink.setFreespeed(bestFreeSpeed);
+
+        return bestFreeSpeed;
+    }
+
+    //Replace the link that needs to be replaced
+    private void linkReplace(Network network, Population population, MainModeIdentifier mainModeIdentifier,CSVPrinter tsvWriter, double firstTravelTimeScore, double firstDistanceScore, double firstTravelTimeDeviation, double firstDistanceDeviation, TravelTime travelTime, Link improveLink, double linkFreeSpeed, List<ImproveScore> improveScoreList, int minFreeSpeedRate, int maxFreeSpeedRate, int freeSpeedLevel) throws IOException {
+
+        for (int freeSpeedRate=minFreeSpeedRate; freeSpeedRate<=maxFreeSpeedRate; freeSpeedRate+=freeSpeedLevel){
             //tsvWriter.printRecord("trip_id", "from_x", "from_y", "to_x", "to_y", "network_travel_time", "validated_travel_time", "network_travel_distance", "validated_travel_distance");
 
-            ScoreInfo bestImproveScoreInfo = new ScoreInfo();
 
             double improvedFreeSpeed = linkFreeSpeed *freeSpeedRate*0.01;
             improveLink.setFreespeed(improvedFreeSpeed);
@@ -310,11 +366,13 @@ public class NetworkValidation implements MATSimAppCommand {
             routeInfoList.clear();
 
             for (Person person : population.getPersons().values()) {
+                int personTripCounter = 0;
                 List<TripStructureUtils.Trip> trips = TripStructureUtils.getTrips(person.getSelectedPlan());
                 for (TripStructureUtils.Trip trip : trips) {
                     if (!mainModeIdentifier.identifyMainMode(trip.getTripElements()).equals(TransportMode.car)) {
                         continue;
                     }
+                    String tripId = person.getId().toString() + "_" + personTripCounter;
                     Coord from = trip.getOriginActivity().getCoord();
                     if (from == null) {
                         from = network.getLinks().get(trip.getOriginActivity().getLinkId()).getToNode().getCoord();
@@ -336,8 +394,8 @@ public class NetworkValidation implements MATSimAppCommand {
                     double improveValidationTravelTime = tripInfoList.get(validatedCount).getValidationTravelTime();
                     double improveValidationDistance = tripInfoList.get(validatedCount).getValidationDistance();
 
-                    if (i == maximalImproveTimes){
-                        tsvWriter.printRecord(tripInfoList.get(validatedCount).getTripId(),tripInfoList.get(validatedCount).getFromX(), tripInfoList.get(validatedCount).getFromY(),tripInfoList.get(validatedCount).getToX(),tripInfoList.get(validatedCount).getToY(), route.travelTime, tripInfoList.get(validatedCount).getValidationTravelTime(), networkTravelDistance,tripInfoList.get(validatedCount).getValidationDistance());
+                    if (tsvWriterFlag){
+                        tsvWriter.printRecord(tripId,from.getX(),from.getY(),to.getX(),to.getY(), networkTravelTime, improveValidationTravelTime, networkTravelDistance, improveValidationDistance);
                     }
 
                     if (networkTravelTime != 0 && improveValidationTravelTime != 0 && networkTravelDistance != 0 && improveValidationDistance != 0){
@@ -355,34 +413,27 @@ public class NetworkValidation implements MATSimAppCommand {
                 }
             }
 
-            //可以增加输出运行完毕后的最高得分的函数
+
             double secondTravelTimeScore = AlgorithmsUtils.travelTimeScoreCalculation(routeInfoList);
             double secondDistanceScore = AlgorithmsUtils.distanceScoreCalculation(routeInfoList);
             double secondTravelTimeDeviation = AlgorithmsUtils.travelTimeDeviation(routeInfoList);
             double secondDistanceDeviation = AlgorithmsUtils.distanceDeviation(routeInfoList);
-            //System.out.println("second Travel Time Score:"+secondTravelTimeScore+"second Distance Score:"+secondDistanceScore + "secondTravelTime Deviation:"+secondTravelTimeDeviation +"second DistanceDeviation:"+secondDistanceDeviation);
+
+            if (tsvWriterFlag){
+                travelTimeDeviation =secondTravelTimeDeviation;
+                System.out.println("second Travel Time Score:"+secondTravelTimeScore+"second Distance Score:"+secondDistanceScore + "secondTravelTime Deviation:"+secondTravelTimeDeviation +"second DistanceDeviation:"+secondDistanceDeviation);
+            }
 
 
-            //路允许发生改变
-            scoreComparison(firstTravelTimeScore, firstDistanceScore, firstTravelTimeDeviation, firstDistanceDeviation, improveScoreList, improvedFreeSpeed, secondTravelTimeScore, secondDistanceScore, secondTravelTimeDeviation, secondDistanceDeviation);
-
-            if (i == maximalImproveTimes){
-                bestImproveScoreInfo.setTravelTimeScore(secondTravelTimeScore);
-                bestImproveScoreInfo.setDistanceScore(secondDistanceScore);
-                bestImproveScoreInfo.setTravelTimeDeviation(secondTravelTimeDeviation);
-                bestImproveScoreInfo.setDistanceDeviation(secondDistanceDeviation);
-                bestImproveScoreList.add(bestImproveScoreInfo);
+            //Filter eligible links
+            if ( firstTravelTimeDeviation>=secondTravelTimeDeviation && secondTravelTimeScore <= firstTravelTimeScore){
+                if (secondDistanceScore >= firstDistanceScore *0.8 && secondDistanceScore <= firstDistanceScore *1.2 &&firstDistanceDeviation * 0.8 <= secondDistanceDeviation && secondDistanceDeviation <= firstDistanceDeviation *1.2 ){
+                    ImproveScore improveScore = new ImproveScore(improvedFreeSpeed, secondTravelTimeScore);
+                    improveScoreList.add(improveScore);
+                }
             }
         }
     }
 
-    private void scoreComparison(double firstTravelTimeScore, double firstDistanceScore, double firstTravelTimeDeviation, double firstDistanceDeviation, List<ImproveScore> improveScoreList, double improvedFreeSpeed, double secondTravelTimeScore, double secondDistanceScore, double secondTravelTimeDeviation, double secondDistanceDeviation) {
-        if (firstDistanceDeviation * 0.8 <= secondDistanceDeviation && secondDistanceDeviation <= firstDistanceDeviation *1.2 && secondTravelTimeScore <= firstTravelTimeScore){
-            if (secondTravelTimeDeviation >= firstTravelTimeDeviation *0.8 && secondTravelTimeDeviation <= firstTravelTimeDeviation *1.2 && secondDistanceScore >= firstDistanceScore *0.8 && secondDistanceScore <= firstDistanceScore *1.2){
-                ImproveScore improveScore = new ImproveScore(improvedFreeSpeed, secondTravelTimeScore);
-                improveScoreList.add(improveScore);
-            }
-        }
-    }
 
 }
