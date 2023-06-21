@@ -8,7 +8,40 @@ import java.util.*;
 public class AlgorithmsUtils{
     private AlgorithmsUtils(){}
 
-    public static double listSort (List<ImproveScore> improveScoreList){
+
+    public static List<LinkCollection> mapToList(Map<Id<Link>,Double> largeGapTripLinkMap){
+        List<LinkCollection> linkList =new ArrayList<>();
+        for (Map.Entry<Id<Link>, Double> idDoubleEntry : largeGapTripLinkMap.entrySet()) {
+            LinkCollection linkCollection = new LinkCollection(idDoubleEntry.getKey(),idDoubleEntry.getValue());
+            linkList.add(linkCollection);
+        }
+        return linkList;
+    }
+
+    public static List<LinkCollection> importantLinkStatistic(List<LinkCollection> linkCollectionList, Map<Id<Link>,Double> normalLinkMap,  Map<Id<Link>,Double> largeGapTripLinkMap){
+        List<LinkCollection> importantLinkList = new ArrayList<>();
+        List<LinkCollection> normalList = mapToList(normalLinkMap);
+        List<LinkCollection> largeGapTripLinkList = mapToList(largeGapTripLinkMap);
+
+        //与API中偏差较大的trip中的link被称为
+
+        List<LinkCollection> checkLinkList = new ArrayList<>();
+        checkLinkList.addAll(linkCollectionList);
+        checkLinkList.addAll(normalList);
+
+
+        for (int i = 0; i < largeGapTripLinkList.size(); i++) {
+            for (int j = 0; j < checkLinkList.size(); j++) {
+                if (largeGapTripLinkList.get(i).getAlgorithmsId() == checkLinkList.get(j).getAlgorithmsId()){
+                    LinkCollection linkCollection = new LinkCollection(largeGapTripLinkList.get(i).getAlgorithmsId(),largeGapTripLinkList.get(i).getAlgorithmsFreeSpeed());
+                    importantLinkList.add(linkCollection);
+                    break;
+                }
+            }
+        }
+        return importantLinkList;
+    }
+    public static double getBestFreeSpeed(List<ImproveScore> improveScoreList){
         double bestFreeSpeed;
         int index =0;
         double score =improveScoreList.get(index).getImproveScore();
@@ -23,12 +56,12 @@ public class AlgorithmsUtils{
         return  bestFreeSpeed;
     }
 
-    public static List<Id<Link>> sort (List<LinkCollection> linkCollectionList){
+    public static List<Id<Link>> idStatistic(List<LinkCollection> linkCollectionList){
         List<Id<Link>> idStatisticsList = new ArrayList<>();
         List<Integer> idStatisticsCountList = new ArrayList<>();
         HashMap<Id<Link>,Integer> idStatisticMap = new HashMap<>();
 
-
+        //把List转换成map，通过这个方法来统计每条link使用了多少次
         for (int i = 0; i < linkCollectionList.size(); i++) {
             Id<Link> id = linkCollectionList.get(i).getAlgorithmsId();
             Integer idCount = idStatisticMap.get(id);
@@ -40,6 +73,7 @@ public class AlgorithmsUtils{
             idStatisticsCountList.add(val.getValue());
         }
 
+        //Selection Sort
         for (int i=0; i<idStatisticsCountList.size(); i++){
             int index =1;
             Integer min = idStatisticsCountList.get(i);
@@ -71,10 +105,11 @@ public class AlgorithmsUtils{
         1.Select the desired link
      */
 
-    public static List<LinkCollection> linkChoice (List<LinkCollection> linkCollectionList, Map<Id<Link>, Double> idCollectionMap){
+    public static List<LinkCollection> getImproveLinkList(List<LinkCollection> linkCollectionList, Map<Id<Link>, Double> idCollectionMap){
         List<LinkCollection> improveLinkList = new ArrayList<>();
 
-        List<Id<Link>>idStatisticsList = sort(linkCollectionList);
+
+        List<Id<Link>>idStatisticsList = idStatistic(linkCollectionList);
 
         for (int i = 0; i < idStatisticsList.size()*0.2; i++) {
             Id<Link> id = idStatisticsList.get(i);
@@ -140,6 +175,26 @@ public class AlgorithmsUtils{
     //Design three different object functions for easy comparison
 
 /*
+    public static double travelTimeScoreCalculation(List<RouteInfo> routeInfoList){// Algorithms4
+        double scoreNetworkTravelTime;
+        double validationTravelTime;
+        double networkTravelTime;
+        double travelTimeScoreSum = 0;
+
+        for (RouteInfo routeInfo : routeInfoList){
+            networkTravelTime = routeInfo.getNetworkTravelTime();
+            validationTravelTime = routeInfo.getValidationTravelTime();
+            travelTimeScoreSum +=Math.pow((Math.abs(networkTravelTime-validationTravelTime)/validationTravelTime),2)+Math.abs((networkTravelTime/validationTravelTime)-1);
+        }
+
+        scoreNetworkTravelTime =(travelTimeScoreSum/ routeInfoList.size());
+
+        return scoreNetworkTravelTime;
+    }
+
+ */
+
+/*
     public static double travelTimeScoreCalculation(List<RouteInfo> routeInfoList){// Algorithms3
         double scoreNetworkTravelTime;
         double validationTravelTime;
@@ -149,7 +204,7 @@ public class AlgorithmsUtils{
         for (RouteInfo routeInfo : routeInfoList){
             networkTravelTime = routeInfo.getNetworkTravelTime();
             validationTravelTime = routeInfo.getValidationTravelTime();
-            travelTimeScoreSum +=Math.pow((Math.abs(networkTravelTime-validationTravelTime)/validationTravelTime),2)+Math.abs((networkTravelTime-validationTravelTime)/validationTravelTime);
+            travelTimeScoreSum +=Math.pow((Math.abs(networkTravelTime-validationTravelTime)/validationTravelTime),2)+Math.abs(((networkTravelTime-validationTravelTime)/validationTravelTime)-1);
         }
 
         scoreNetworkTravelTime =(travelTimeScoreSum/ routeInfoList.size());
@@ -157,8 +212,8 @@ public class AlgorithmsUtils{
         return scoreNetworkTravelTime;
     }
 
- */
 
+ */
 
 
 
@@ -166,16 +221,19 @@ public class AlgorithmsUtils{
 
 
 /*
+
        public static double travelTimeScoreCalculation(List<RouteInfo> routeInfoList){// Algorithms2
         double scoreNetworkTravelTime;
         double validationTravelTime;
         double networkTravelTime;
+        double travelTimeScore;
         double travelTimeScoreSum = 0;
 
         for (RouteInfo routeInfo : routeInfoList){
             networkTravelTime = routeInfo.getNetworkTravelTime();
             validationTravelTime = routeInfo.getValidationTravelTime();
-            travelTimeScoreSum +=Math.pow((Math.abs(networkTravelTime-validationTravelTime)/validationTravelTime),2);
+            travelTimeScore =Math.pow((Math.abs(networkTravelTime-validationTravelTime)/validationTravelTime),2);
+            travelTimeScoreSum +=travelTimeScore;
         }
         scoreNetworkTravelTime =(travelTimeScoreSum/ routeInfoList.size());
 
@@ -184,10 +242,6 @@ public class AlgorithmsUtils{
 
 
  */
-
-
-
-
 
 
 
@@ -222,6 +276,14 @@ public class AlgorithmsUtils{
 
         return scoreNetworkTravelTime;
     }
+
+
+
+
+
+
+
+
 
 
 

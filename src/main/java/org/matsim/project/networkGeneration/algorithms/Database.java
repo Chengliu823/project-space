@@ -11,7 +11,6 @@ import java.util.List;
 
 
 public class Database {
-
     public Connection connection(){
         String url = "jdbc:sqlite:E:\\TU_Berlin\\Masterarbeit\\project-space\\lib\\TripInfo.db";
 
@@ -60,7 +59,7 @@ public class Database {
     }
 
     public void dropTripInfoTable(){
-        String sqlDelete="DROP TABLE TripInfo";
+        String sqlDelete="DROP TABLE GooleTripInfo";
 
         try (Connection connection = this.connection();
              Statement statement = connection.createStatement()) {
@@ -70,7 +69,7 @@ public class Database {
         }
     }
     public void deleteTripInfoTable(){
-        String sqlDelete="DELETE FROM TripInfo";
+        String sqlDelete="DELETE FROM GoogleTripInfo";
 
         try (Connection connection = this.connection();
              Statement statement = connection.createStatement()) {
