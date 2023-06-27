@@ -81,6 +81,7 @@ public class NetworkValidation implements MATSimAppCommand {
     Map<Id<Link>,Double> largeGapTripLinkMap = new HashMap<>();
     List<LinkCollection> issuesLinkList = new ArrayList<>();
 
+    List<Double>travelTimeScoreList=new ArrayList<>();
     List<TripInfo> tripInfoList = new ArrayList<>();
 
     Map<Id<Link>, Double> idCollectionMap = new HashMap<>();
@@ -144,7 +145,7 @@ public class NetworkValidation implements MATSimAppCommand {
     private void iterativeAlgorithms(Database database, List<TripInfo> databaseTripInfoList, TravelTimeDistanceValidator validator, MainModeIdentifier mainModeIdentifier, Population population, Network network, TravelTime travelTime, CSVPrinter tsvWriter) throws IOException, InterruptedException {
 
         while (true){
-            iteratorCount++;
+
 
             LeastCostPathCalculator router = new SpeedyALTFactory().createPathCalculator(network, new OnlyTimeDependentTravelDisutility(travelTime), travelTime);
 
@@ -156,7 +157,9 @@ public class NetworkValidation implements MATSimAppCommand {
             firstDistanceDispersion = AlgorithmsUtils.distanceDeviation(routeInfoList);
             System.out.println("first travel Time Score:" + firstTravelTimeScore + "first distance Score: " + firstDistanceScore + "firstTravelTime Deviation:" + firstTravelTimeDispersion + "firstDistanceDeviation:" + firstDistanceDispersion);
 
-            if (travelTimeScore*1.2 >= firstTravelTimeScore){
+            travelTimeScoreList.add(firstTravelTimeScore);
+
+            if (iteratorCount>=3 && iteratorCount %2 ==0 && travelTimeScoreList.get(iteratorCount)*1.2>=travelTimeScoreList.get(iteratorCount-2)){
                 break;
             }
 
@@ -164,6 +167,7 @@ public class NetworkValidation implements MATSimAppCommand {
 
             improveValidation(network, population, mainModeIdentifier, tsvWriter, firstTravelTimeScore, firstDistanceScore, firstTravelTimeDispersion, firstDistanceDispersion, travelTime);
 
+            iteratorCount++;
             iteratorClear();
         }
     }
@@ -485,9 +489,6 @@ public class NetworkValidation implements MATSimAppCommand {
             double secondDistanceDispersion = AlgorithmsUtils.distanceDeviation(routeInfoList);
 
             if (tsvWriterFlag){
-                if (issuesFalg =false){
-                    travelTimeScore =secondTravelTimeScore;
-                }
                 System.out.println("second Travel Time Score:"+secondTravelTimeScore+"second Distance Score:"+secondDistanceScore + "secondTravelTime Deviation:"+secondTravelTimeDispersion +"second DistanceDeviation:"+secondDistanceDispersion);
             }
 
