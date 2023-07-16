@@ -11,6 +11,11 @@ import java.util.List;
 
 
 public class Database {
+    public static void main(String[] args) {
+        Database database = new Database();
+        database.createTripInfoTable();
+    }
+
     public Connection connection(){
         String url = "jdbc:sqlite:E:\\TU_Berlin\\Masterarbeit\\project-space\\lib\\TripInfo.db";
 
@@ -80,12 +85,6 @@ public class Database {
 
     }
 
-    /*
-        先SELECE COUNT(*) FROM table获取表格一共多少数据，然后写一个循环，循环次数是SELECE COUNT(*) FROM table的查询结果，循环的内容是SELECT id FROM table
-
-        使用语句select id form TripInfo 获取所有已存在id， 然后把所有id存放到一个list中，对list进行遍历，如果list中不存在该id则插入数据，如果存在该id则不插入数据
-
-     */
 
     public List<TripInfo> infoList(String API){
         //Database database =new Database();
@@ -130,7 +129,6 @@ public class Database {
 
 
     public void Insert(TripInfo tripInfo,String API){
-        String url = "jdbc:sqlite:E:\\TU_Berlin\\Masterarbeit\\project-space\\lib\\TripInfo.db";
 
         String sqlInsert =null;
 

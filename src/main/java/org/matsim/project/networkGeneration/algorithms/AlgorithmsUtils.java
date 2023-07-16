@@ -23,8 +23,6 @@ public class AlgorithmsUtils{
         List<LinkCollection> normalList = mapToList(normalLinkMap);
         List<LinkCollection> largeGapTripLinkList = mapToList(largeGapTripLinkMap);
 
-        //与API中偏差较大的trip中的link被称为
-
         List<LinkCollection> checkLinkList = new ArrayList<>();
         checkLinkList.addAll(linkCollectionList);
         checkLinkList.addAll(normalList);
@@ -61,7 +59,6 @@ public class AlgorithmsUtils{
         List<Integer> idStatisticsCountList = new ArrayList<>();
         HashMap<Id<Link>,Integer> idStatisticMap = new HashMap<>();
 
-        //把List转换成map，通过这个方法来统计每条link使用了多少次
         for (int i = 0; i < linkCollectionList.size(); i++) {
             Id<Link> id = linkCollectionList.get(i).getAlgorithmsId();
             Integer idCount = idStatisticMap.get(id);
@@ -162,13 +159,6 @@ public class AlgorithmsUtils{
         return result;
     }
 
-
-    /*
-       求network的得分情况,该评分将用于比较network优化前后的效果，该评分越低越好
-       1.计算validation的平均数
-       2.计算Network减去Validation的差值，将差值转化为绝对值
-       3.Network与validation之间差值的绝对值的和的平均数除以validation值的平均数
- */
 
 
     //calculate the score of the travel time,This score will be used to compare the effect of the network before and after optimization. The lower the score, the better.
@@ -276,21 +266,6 @@ public class AlgorithmsUtils{
 
         return scoreNetworkTravelTime;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

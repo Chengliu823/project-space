@@ -66,9 +66,17 @@ public class NetworkValidation implements MATSimAppCommand {
     @CommandLine.Option(names = "--improveOutput", description = "output network file", required = true)
     private Path improveOutput;
 
+    @CommandLine.Option(names = "--typeOfOperation", description = "type of Operation", required = true)
+    private OperationTyp typeOfOperation;
+
     private enum API {
         HERE, GOOGLE_MAP, NETWORK_FILE
     }
+
+    private  enum OperationTyp{
+        VALIDATION,IMPROVEMENT
+    }
+
 
     private final String mode = "car";
 
@@ -95,8 +103,10 @@ public class NetworkValidation implements MATSimAppCommand {
     double travelTimeScore;
     boolean tsvWriterFlag = false;
     boolean databaseFlag=false;
-    boolean issuesFalg =false;
+    boolean issuesFlag =false;
     int iteratorCount =0;
+
+    boolean validationFlag =false;
     public static void main(String[] args) {
         new NetworkValidation().execute(args);
     }
@@ -113,26 +123,12 @@ public class NetworkValidation implements MATSimAppCommand {
         Population population = PopulationUtils.readPopulation(plansPath);
         Network network = NetworkUtils.readNetwork(networkPath);
         TravelTime travelTime = new QSimFreeSpeedTravelTime(1.0);
-        //LeastCostPathCalculator router = new SpeedyALTFactory().createPathCalculator(network, new OnlyTimeDependentTravelDisutility(travelTime), travelTime);
+        LeastCostPathCalculator router = new SpeedyALTFactory().createPathCalculator(network, new OnlyTimeDependentTravelDisutility(travelTime), travelTime);
 
         CSVPrinter tsvWriter = new CSVPrinter(new FileWriter(outputPath + "/network-validation-" + api.toString() + ".tsv"), CSVFormat.TDF);
         validator = getApiInformation(ct);
 
-
-        iterativeAlgorithms(database, databaseTripInfoList, validator, mainModeIdentifier, population, network, travelTime, tsvWriter);
-
-        /*
-        firstValidation(validator, mainModeIdentifier, population, network, router, tsvWriter, databaseTripInfoList, database);
-        firstTravelTimeScore= AlgorithmsUtils.travelTimeScoreCalculation(routeInfoList);
-        firstDistanceScore = AlgorithmsUtils.distanceScoreCalculation(routeInfoList);
-        firstTravelTimeDispersion = AlgorithmsUtils.travelTimeDeviation(routeInfoList);
-        firstDistanceDispersion = AlgorithmsUtils.distanceDeviation(routeInfoList);
-
-        System.out.println("first travel Time Score:"+firstTravelTimeScore+ "first distance Score: "+firstDistanceScore+"firstTravelTime Deviation:"+ firstTravelTimeDispersion +"firstDistanceDeviation:"+ firstDistanceDispersion);
-
-        identifyImproveLink();
-        improveValidation(network, population, mainModeIdentifier, tsvWriter,firstTravelTimeScore,firstDistanceScore, firstTravelTimeDispersion, firstDistanceDispersion, travelTime);
-         */
+        operation(database, databaseTripInfoList, validator, mainModeIdentifier, population, network, travelTime, router, tsvWriter);
 
         tsvWriter.close();
         new NetworkWriter(network).write(improveOutput.toString());
@@ -140,13 +136,27 @@ public class NetworkValidation implements MATSimAppCommand {
         return 0;
     }
 
+    private void operation(Database database, List<TripInfo> databaseTripInfoList, TravelTimeDistanceValidator validator, MainModeIdentifier mainModeIdentifier, Population population, Network network, TravelTime travelTime, LeastCostPathCalculator router, CSVPrinter tsvWriter) throws IOException, InterruptedException {
+        if (typeOfOperation == OperationTyp.VALIDATION){
+            firstValidation(validator, mainModeIdentifier, population, network, router, tsvWriter, databaseTripInfoList, database);
+            firstTravelTimeScore= AlgorithmsUtils.travelTimeScoreCalculation(routeInfoList);
+            firstDistanceScore = AlgorithmsUtils.distanceScoreCalculation(routeInfoList);
+            firstTravelTimeDispersion = AlgorithmsUtils.travelTimeDeviation(routeInfoList);
+            firstDistanceDispersion = AlgorithmsUtils.distanceDeviation(routeInfoList);
 
-       //Algorithms
+            System.out.println("first travel Time Score:"+firstTravelTimeScore+ "first distance Score: "+firstDistanceScore+"firstTravelTime Deviation:"+ firstTravelTimeDispersion +"firstDistanceDeviation:"+ firstDistanceDispersion);
+        } else if (typeOfOperation == OperationTyp.IMPROVEMENT){
+            iterativeAlgorithms(database, databaseTripInfoList, validator, mainModeIdentifier, population, network, travelTime, tsvWriter);
+        } else {
+            System.out.println("error, Please enter VALIDATION or IMPROVEMENT");
+        }
+    }
+
+
+    //Algorithms
     private void iterativeAlgorithms(Database database, List<TripInfo> databaseTripInfoList, TravelTimeDistanceValidator validator, MainModeIdentifier mainModeIdentifier, Population population, Network network, TravelTime travelTime, CSVPrinter tsvWriter) throws IOException, InterruptedException {
 
         while (true){
-
-
             LeastCostPathCalculator router = new SpeedyALTFactory().createPathCalculator(network, new OnlyTimeDependentTravelDisutility(travelTime), travelTime);
 
             firstValidation(validator, mainModeIdentifier, population, network, router, tsvWriter, databaseTripInfoList, database);
@@ -159,7 +169,7 @@ public class NetworkValidation implements MATSimAppCommand {
 
             travelTimeScoreList.add(firstTravelTimeScore);
 
-            if (iteratorCount>=3 && iteratorCount %2 ==0 && travelTimeScoreList.get(iteratorCount)*1.2>=travelTimeScoreList.get(iteratorCount-2)){
+            if (iteratorCount>=3 && iteratorCount %2 ==0 && travelTimeScoreList.get(iteratorCount)*1.05>=travelTimeScoreList.get(iteratorCount-2)){
                 break;
             }
 
@@ -190,24 +200,19 @@ public class NetworkValidation implements MATSimAppCommand {
         tsvWriterFlag =false;
     }
 
-
     private void identifyImproveLink() {
         improveLinkList = AlgorithmsUtils.getImproveLinkList(linkCollectionList,idCollectionMap);
 
         //improveLinkList.addAll(AlgorithmsUtils.mapToList(largeGapTripLinkMap));                                 //Original
 
-        if (issuesFalg){
+        if (issuesFlag){
             issuesLinkList =AlgorithmsUtils.importantLinkStatistic(linkCollectionList,normalLinkMap,largeGapTripLinkMap); //Option 1
             improveLinkList.addAll(issuesLinkList);
-            issuesFalg =false;
+            issuesFlag =false;
         }else {
             removeImportantLink();                                                                                          //Option 2
-            issuesFalg = true;
+            issuesFlag = true;
         }
-
-
-
-
     }
 
     private void removeImportantLink() {
@@ -283,7 +288,7 @@ public class NetworkValidation implements MATSimAppCommand {
 
                 Coord to = trip.getDestinationActivity().getCoord();
                 if (to == null) {
-                    to = network.getLinks().get(trip.getOriginActivity().getLinkId()).getToNode().getCoord();
+                    to = network.getLinks().get(trip.getDestinationActivity().getLinkId()).getToNode().getCoord();
                 }
                 Link toLink = NetworkUtils.getNearestLink(network, to);
 
@@ -494,11 +499,9 @@ public class NetworkValidation implements MATSimAppCommand {
 
 
             //Filter eligible links
-            if ( firstTravelTimeDeviation>=secondTravelTimeDispersion && secondTravelTimeScore <= firstTravelTimeScore){
-                if (secondDistanceScore >= firstDistanceScore *0.8 && secondDistanceScore <= firstDistanceScore *1.2 &&firstDistanceDeviation * 0.8 <= secondDistanceDispersion && secondDistanceDispersion <= firstDistanceDeviation *1.2 ){
+            if ( firstTravelTimeDeviation>=secondTravelTimeDispersion && secondTravelTimeScore <= firstTravelTimeScore && secondDistanceScore<=firstDistanceScore && secondDistanceDispersion <=firstDistanceDeviation){
                     ImproveScore improveScore = new ImproveScore(improvedFreeSpeed, secondTravelTimeScore);
                     improveScoreList.add(improveScore);
-                }
             }
         }
     }
