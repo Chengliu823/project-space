@@ -106,7 +106,6 @@ public class NetworkValidation implements MATSimAppCommand {
     boolean issuesFlag =false;
     int iteratorCount =0;
 
-    boolean validationFlag =false;
     public static void main(String[] args) {
         new NetworkValidation().execute(args);
     }
@@ -116,7 +115,7 @@ public class NetworkValidation implements MATSimAppCommand {
         Database database = new Database();
         List<TripInfo> databaseTripInfoList = database.infoList(api.toString());
 
-        CoordinateTransformation ct = new GeotoolsTransformation("EPSG:25832", "EPSG:4326");
+        CoordinateTransformation ct = new GeotoolsTransformation("EPSG:25832","EPSG:4326");
         TravelTimeDistanceValidator validator;
         MainModeIdentifier mainModeIdentifier = new DefaultAnalysisMainModeIdentifier();
 
@@ -170,6 +169,8 @@ public class NetworkValidation implements MATSimAppCommand {
             travelTimeScoreList.add(firstTravelTimeScore);
 
             if (iteratorCount>=3 && iteratorCount %2 ==0 && travelTimeScoreList.get(iteratorCount)*1.05>=travelTimeScoreList.get(iteratorCount-2)){
+                break;
+            } else if (travelTimeScoreList.get(iteratorCount) ==0){
                 break;
             }
 
@@ -416,9 +417,15 @@ public class NetworkValidation implements MATSimAppCommand {
     //calculate the best free speed
     public double getBestFreeSpeed(Network network, Population population, MainModeIdentifier mainModeIdentifier, CSVPrinter tsvWriter, double firstTravelTimeScore, double firstDistanceScore, double firstTravelTimeDeviation, double firstDistanceDeviation, TravelTime travelTime, Link improveLink, double linkFreeSpeed, List<ImproveScore> improveScoreList, int minFreeSpeedRate, int maxFreeSpeedRate, int freeSpeedLevel) throws IOException {
         double bestFreeSpeed;
+
         freeSpeedReplace(network, population, mainModeIdentifier,tsvWriter, firstTravelTimeScore, firstDistanceScore, firstTravelTimeDeviation, firstDistanceDeviation, travelTime, improveLink, linkFreeSpeed, improveScoreList, minFreeSpeedRate, maxFreeSpeedRate ,freeSpeedLevel);
 
-        bestFreeSpeed = AlgorithmsUtils.getBestFreeSpeed(improveScoreList);
+        if (improveScoreList.size() != 0){
+            bestFreeSpeed = AlgorithmsUtils.getBestFreeSpeed(improveScoreList);
+        }else {
+            bestFreeSpeed =linkFreeSpeed;
+        }
+
         improveLink.setFreespeed(bestFreeSpeed);
 
         return bestFreeSpeed;
@@ -429,7 +436,6 @@ public class NetworkValidation implements MATSimAppCommand {
 
         for (int freeSpeedRate=minFreeSpeedRate; freeSpeedRate<=maxFreeSpeedRate; freeSpeedRate+=freeSpeedLevel){
             //tsvWriter.printRecord("trip_id", "from_x", "from_y", "to_x", "to_y", "network_travel_time", "validated_travel_time", "network_travel_distance", "validated_travel_distance");
-
 
             double improvedFreeSpeed = linkFreeSpeed *freeSpeedRate*0.01;
             improveLink.setFreespeed(improvedFreeSpeed);
@@ -455,7 +461,7 @@ public class NetworkValidation implements MATSimAppCommand {
 
                     Coord to = trip.getDestinationActivity().getCoord();
                     if (to == null) {
-                        to = network.getLinks().get(trip.getOriginActivity().getLinkId()).getToNode().getCoord();
+                        to = network.getLinks().get(trip.getDestinationActivity().getLinkId()).getToNode().getCoord();
                     }
                     Link toLink = NetworkUtils.getNearestLink(network, to);
 
@@ -496,7 +502,6 @@ public class NetworkValidation implements MATSimAppCommand {
             if (tsvWriterFlag){
                 System.out.println("second Travel Time Score:"+secondTravelTimeScore+"second Distance Score:"+secondDistanceScore + "secondTravelTime Deviation:"+secondTravelTimeDispersion +"second DistanceDeviation:"+secondDistanceDispersion);
             }
-
 
             //Filter eligible links
             if ( firstTravelTimeDeviation>=secondTravelTimeDispersion && secondTravelTimeScore <= firstTravelTimeScore && secondDistanceScore<=firstDistanceScore && secondDistanceDispersion <=firstDistanceDeviation){

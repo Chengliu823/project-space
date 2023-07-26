@@ -42,7 +42,9 @@ public class AlgorithmsUtils{
     public static double getBestFreeSpeed(List<ImproveScore> improveScoreList){
         double bestFreeSpeed;
         int index =0;
+
         double score =improveScoreList.get(index).getImproveScore();
+
 
         for (int i = 0; i < improveScoreList.size(); i++) {
             if (score >= improveScoreList.get(i).getImproveScore()){
